@@ -49,6 +49,16 @@ const AddEvent = () => {
     {label: 'Civil', value: 'Civil'},
   ]);
 
+  const [typeopen, typesetOpen] = useState(false);
+  const [typevalue, typesetValue] = useState(null);
+  const [typeitems, typesetItems] = useState([
+    {label: 'Competition', value: 'Competition'},
+    {label: 'Workshop', value: 'Workshop'},
+    {label: 'Fest ', value: 'Fest'},
+    {label: 'Exam', value: 'Exam'},
+    {label: 'Industry Visit', value: 'Industry Visit'},
+  ]);
+
 
 
   const validateForm = () => {
@@ -60,6 +70,7 @@ const AddEvent = () => {
     if(!value) errors.stream = "Stream is required.";
     if(!semvalue) errors.sem = "Semester is required.";
     if(!deptvalue) errors.dept = "Department is required.";
+    if(!typevalue) errors.type = "Event type is required.";
 
     
     setErrors(errors);
@@ -166,6 +177,21 @@ const AddEvent = () => {
       mode='outlined'
       />
       {errors.description && <Text style={{ color: 'red' }}>{errors.description}</Text>}
+
+
+      <DropDownPicker
+      placeholder='select a type of event'
+      open={typeopen}
+      value={typevalue}
+      items={typeitems}
+      setOpen={typesetOpen}
+      setValue={typesetValue}
+      setItems={typesetItems}
+      zIndex={4000}
+      zIndexInverse={4000}
+    />
+      {errors.type && <Text style={{ color: 'red' }}>{errors.type}</Text>}
+
       <DropDownPicker
       placeholder='select a stream'
       open={open2}

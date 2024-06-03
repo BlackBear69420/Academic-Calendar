@@ -4,11 +4,13 @@ import colors from '../../assests/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FAB } from 'react-native-paper';
 import Modal from 'react-native-modal';
+import { useNavigation } from '@react-navigation/native';
 
 const Streams = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const navigation = useNavigation();
 
   const handleSubmit = () => {
     if (inputValue.trim() === '') {
@@ -31,13 +33,15 @@ const Streams = () => {
       <Text style={styles.header}>Streams</Text>
       <View style={styles.streamsContainer}>
         {streams.map((stream, index) => (
-          <TouchableOpacity key={index} style={styles.streamButton}>
+          <View key={index} style={styles.streamButton}>
             <View>
               <Text style={styles.streamTitle}>{stream.name}</Text>
               <Text style={styles.streamDetails}>Departments: {stream.departments}</Text>
             </View>
-            <Icon name="pencil" size={20} color={colors.white} style={styles.iconStyle} />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={()=> navigation.navigate('AddDepartment')}>
+                <Icon name="pencil" size={20} color={colors.white} style={styles.iconStyle} />
+            </TouchableOpacity>
+          </View>
         ))}
       </View>
       <FAB

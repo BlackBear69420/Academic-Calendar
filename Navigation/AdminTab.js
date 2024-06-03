@@ -5,11 +5,11 @@ import Department from '../src/Screens/AdminScreens/Department';
 import Streams from '../src/Screens/AdminScreens/Streams';
 import { NavigationContainer } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons'; // or any other icon set you prefer
+import HomeScreen from '../src/Screens/AdminScreens/HomeScreen';
 
 const Tab = createBottomTabNavigator();
 export function AdminTab() {
     return (
-      <NavigationContainer>
         <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ color, size }) => {
@@ -23,16 +23,13 @@ export function AdminTab() {
                 return <Icon name={iconName} size={size} color={color} />;
             },
             headerShown: false,
-          })}
-          tabBarOptions={{
             activeTintColor: 'tomato',
             inactiveTintColor: 'gray',
-          }}
+          })}
         >
-          <Tab.Screen name="Events" component={AddEvent} />
+          <Tab.Screen name="Events" component={HomeScreen} />
           <Tab.Screen name="Stream" component={Streams} />
         </Tab.Navigator>
-      </NavigationContainer>
     );
   }
   

@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { UserContext } from '../../../UserContext';
 import { checkCredentials } from '../../../Backend/StudentAPICalls';
+import Icon from 'react-native-vector-icons/Entypo';
 
 const Login = () => {
   const {userId, setUserId} = useContext(UserContext);
@@ -127,8 +128,8 @@ const Login = () => {
                 mode='outlined'
                 right={
                   <TextInput.Icon
-                    icon={passwordVisible ? "eye-off" : "eye"}
-                    onPress={() => setPasswordVisible(!passwordVisible)}
+                  icon={props => <Icon {...props} name={passwordVisible ? "eye" : "eye-with-line"} />}
+                  onPress={() => setPasswordVisible(!passwordVisible)}
                   />
                 }
               />

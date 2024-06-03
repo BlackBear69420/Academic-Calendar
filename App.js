@@ -34,7 +34,7 @@ function AppWrapper() {
 
   return (
     <View style={backgroundStyle}>
-      {userId && role ? (role=== 'admin'?<AdminTab/>: <StudentNav />) : <AuthNavigation />}
+      {userId && role ? (role=== 'admin'?<AdminNav/>: <StudentNav />) : <AuthNavigation />}
     </View>
   );
 }
