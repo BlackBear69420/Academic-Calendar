@@ -5,38 +5,39 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import DatePicker2 from 'react-native-date-picker'
 import colors from '../../assests/colors';
 import { TextInput } from 'react-native-paper';
-import { addEventHandler, fetchStreamDataArray } from '../../../Backend/AdminAPICalls';
+import {editEvent, fetchStreamDataArray } from '../../../Backend/AdminAPICalls';
 
-const AddEvent = () => {
+const EditEvent = (props) => {
+  const data = props.route.params.item;
   const [date, setDate] = useState(null);
   const [time, setTime] = useState(new Date());
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState(data.title);
+  const [description, setDescription] = useState(data.description);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false)
   const [range, setRange] = React.useState({});
 
   const [open2, setOpen2] = useState(false);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState(data.stream);
   const [items, setItems] = useState([
     {label: 'select stream', value: 'select stream'}
   ]);
 
   const [semopen, semsetOpen] = useState(false);
-  const [semvalue, semsetValue] = useState('select stream');
+  const [semvalue, semsetValue] = useState(data.sem);
   const [semitems, semsetItems] = useState([
     {label: 'select stream', value: 'select stream'}
   ]);
 
   const [deptopen, deptsetOpen] = useState(false);
-  const [deptvalue, deptsetValue] = useState('select stream');
+  const [deptvalue, deptsetValue] = useState(data.dept);
   const [deptitems, deptsetItems] = useState([
     {label: 'select stream', value: 'select stream'},
   ]);
 
   const [typeopen, typesetOpen] = useState(false);
-  const [typevalue, typesetValue] = useState(null);
+  const [typevalue, typesetValue] = useState(data.type?data.type:null);
   const [typeitems, typesetItems] = useState([
     {label: 'Competition', value: 'Competition'},
     {label: 'Workshop', value: 'Workshop'},
@@ -66,7 +67,8 @@ const AddEvent = () => {
         value: stream.stream,
       }));
       console.log(extractedStreams);
-      setItems(extractedStreams)
+      setItems(extractedStreams);
+      setValue(data.dept)
     }
     fetchData();
   },[])
@@ -103,8 +105,7 @@ const extractDepartments = (data, streamName) => {
   }));
 };
 
-console.log(deptvalue);
-console.log(semvalue);
+
 
   const validateForm = () => {
     const errors = {};
@@ -113,8 +114,8 @@ console.log(semvalue);
     if (!title.trim()) errors.title = "Title is required.";
     if (!description.trim()) errors.description = "Description is required.";
     if(!value) errors.stream = "Stream is required.";
-    if(!semvalue || semvalue=== 'select stream') errors.sem = "Semester is required.";
-    if(!deptvalue || deptvalue=== 'select stream') errors.dept = "Department is required.";
+    if(!semvalue) errors.sem = "Semester is required.";
+    if(!deptvalue) errors.dept = "Department is required.";
     if(!typevalue) errors.type = "Event type is required.";
 
     
@@ -140,7 +141,7 @@ console.log(semvalue);
         time: time.toLocaleTimeString(),
         title: title,
         description: description,
-        stream:transformStreamName(value),
+        stream:value,
         sem:semvalue,
         dept: deptvalue,
         range:dateData,
@@ -148,7 +149,7 @@ console.log(semvalue);
       };
       console.log(formData);
       try{
-        const res = await addEventHandler(formData);
+        const res = await editEvent(data.id,formData);
         if (res) {
           console.log('Added event successfully');
           setIsLoading(false); 
@@ -218,6 +219,7 @@ console.log(semvalue);
        {errors.title && <Text style={{ color: 'red' }}>{errors.title}</Text>}
        <TextInput
       label="Description"
+      multiline={true}
       value={description}
       onChangeText={text => setDescription(text)}
       mode='outlined'
@@ -262,7 +264,7 @@ console.log(semvalue);
       zIndex={2000}
       zIndexInverse={2000}
     />
-      {errors.dept && <Text style={{ color: 'red' }}>{errors.dept}</Text>}
+      {errors.sem && <Text style={{ color: 'red' }}>{errors.sem}</Text>}
 
     <DropDownPicker
       placeholder='select a sem'
@@ -275,7 +277,7 @@ console.log(semvalue);
       zIndex={1000}
       zIndexInverse={1000}
     />
-          {errors.sem && <Text style={{ color: 'red' }}>{errors.sem}</Text>}
+      {errors.dept && <Text style={{ color: 'red' }}>{errors.dept}</Text>}
 
       <Button
         onPress={onSubmit}
@@ -291,7 +293,7 @@ console.log(semvalue);
   );
 };
 
-export default AddEvent;
+export default EditEvent;
 
 const LoadingIndicator = () => (
   <View style={styles.indicator}>

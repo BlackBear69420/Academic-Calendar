@@ -1,11 +1,34 @@
 import { ScrollView, StatusBar, StyleSheet, View, Text } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Avatar } from 'react-native-paper';
 import colors from '../../assests/colors';
 import { CalendarList } from 'react-native-calendars';
+import { fetchFilterEvents } from '../../../Backend/StudentAPICalls';
+import { getUserdata } from '../../../Backend/InAppStore';
 
 const Home = () => {
   const [date, setDate] = React.useState(new Date());
+  
+
+  const transformStreamName = (streamName) => {
+    const ignoreWords = ["of","in"];
+    return streamName
+      .split(" ")
+      .filter(word => !ignoreWords.includes(word.toLowerCase()))
+      .map(word => word.charAt(0))
+      .join("");
+  };
+
+  useEffect(()=>{
+    const fetchData = async()=>{
+      const user = await getUserdata();
+      console.log(user);
+      const stream = transformStreamName(user.stream)
+      const data = await fetchFilterEvents(stream, user.dept, user.sem);
+      console.log('Event data',data);
+    }
+    fetchData();
+  },[])
 
   return (
     <View style={{ flex: 1 }}>

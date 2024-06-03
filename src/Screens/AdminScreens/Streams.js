@@ -1,32 +1,34 @@
-import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import colors from '../../assests/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FAB } from 'react-native-paper';
-import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
+import { fetchStreamData, deleteStream } from '../../../Backend/AdminAPICalls';
 
 const Streams = () => {
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [isInputFocused, setIsInputFocused] = useState(false);
   const navigation = useNavigation();
+  const [streams, setStreams] = useState([]);
+  const [call, setCall] = useState(false);
 
-  const handleSubmit = () => {
-    if (inputValue.trim() === '') {
-      Alert.alert('Error', 'Input is required');
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchStreamData();
+      setStreams(data);
+    };
+
+    fetchData();
+  }, [call]);
+
+  const handleDelete = async (streamId) => {
+    const isSuccess = await deleteStream(streamId);
+    if (isSuccess) {
+      setStreams((prevStreams) => prevStreams.filter(stream => stream.id !== streamId));
+      Alert.alert('Success', 'Stream deleted successfully');
     } else {
-      console.log(inputValue);
-      setModalVisible(false);
-      setInputValue('');
+      Alert.alert('Error', 'Failed to delete stream');
     }
   };
-
-  const streams = [
-    { name: 'BE', departments: 5 },
-    { name: 'MCA', departments: 5 },
-    { name: 'MBA', departments: 5 },
-  ];
 
   return (
     <View style={{ flex: 1 }}>
@@ -35,47 +37,36 @@ const Streams = () => {
         {streams.map((stream, index) => (
           <View key={index} style={styles.streamButton}>
             <View>
-              <Text style={styles.streamTitle}>{stream.name}</Text>
-              <Text style={styles.streamDetails}>Departments: {stream.departments}</Text>
+              <Text style={styles.streamTitle}>{stream.stream}</Text>
+              <Text style={styles.streamDetails}>Departments: {stream.departmentsCount}</Text>
+              <Text style={styles.streamDetails}>Semester: {stream.semester}</Text>
             </View>
-            <TouchableOpacity onPress={()=> navigation.navigate('AddDepartment')}>
-                <Icon name="pencil" size={20} color={colors.white} style={styles.iconStyle} />
-            </TouchableOpacity>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity onPress={() => {
+                setCall(!call);
+                navigation.navigate('EditStream', { stream })
+                }}>
+                <Icon name="pencil" size={18} color={colors.white} style={styles.iconStyle} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDelete(stream.id)}>
+                <Icon name="trash" size={18} color={colors.white} style={styles.iconStyle} />
+              </TouchableOpacity>
+            </View>
           </View>
         ))}
       </View>
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => setModalVisible(true)}
+        onPress={() =>{ 
+          setCall(!call);
+          navigation.navigate('AddDepartment')
+        }}
         color={colors.white}
       />
-      <Modal
-        isVisible={isModalVisible}
-        onBackdropPress={() => setModalVisible(false)}
-        style={styles.modal}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Add stream</Text>
-          <TextInput
-            style={[
-              styles.input,
-              isInputFocused && { borderColor: colors.black, borderWidth: 2 }
-            ]}
-            placeholder="Enter stream name"
-            placeholderTextColor={colors.grey}
-            value={inputValue}
-            onChangeText={setInputValue}
-            onFocus={() => setIsInputFocused(true)}
-            onBlur={() => setIsInputFocused(false)}
-          />
-          <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
-            <Text style={styles.submitButtonText}>Submit</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
     </View>
-  )
-}
+  );
+};
 
 export default Streams;
 
@@ -91,9 +82,9 @@ const styles = StyleSheet.create({
     margin: 20,
     padding: 20,
     gap: 25,
-    borderWidth:1,
-    borderColor:colors.black,
-    borderRadius:18
+    borderWidth: 1,
+    borderColor: colors.black,
+    borderRadius: 18
   },
   streamButton: {
     borderWidth: 2,
@@ -104,22 +95,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor:colors.black
+    backgroundColor: colors.black
   },
   streamTitle: {
     color: colors.white,
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: 'bold'
   },
   streamDetails: {
     color: colors.white,
-    fontSize: 16,
+    fontSize: 14,
+  },
+  iconContainer: {
+    flexDirection: 'row',
   },
   iconStyle: {
     borderWidth: 2,
-    borderRadius: 50,
-    padding: 15,
-    borderColor: colors.white
+    borderRadius: 40,
+    padding: 6,
+    borderColor: colors.white,
+    marginLeft: 10
   },
   fab: {
     position: 'absolute',

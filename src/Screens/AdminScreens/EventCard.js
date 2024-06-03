@@ -2,8 +2,9 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const EventCard = ({ event, onEdit, onDelete }) => {
-  const { date, title, description, department, stream, semester, type } = event;
-  const day = date.getDate();
+  const { title, description, dept, stream, sem, type } = event;
+  const date = event.range.startDate;
+  const day =  date.slice(-2);
   const suffix = getDaySuffix(day);
 
   return (
@@ -16,12 +17,12 @@ const EventCard = ({ event, onEdit, onDelete }) => {
         <Text style={styles.eventTitle}>{title}</Text>
         <Text style={styles.eventDetails}>{description}</Text>
         <View style={styles.inlineDetails}>
-          <Text style={styles.eventDetails}>Department: {department}</Text>
+          <Text style={styles.eventDetails}>Department: {dept}</Text>
           <Text style={styles.eventDetails}>Stream: {stream}</Text>
         </View>
         <View style={styles.inlineDetails}>
-          <Text style={styles.eventDetails}>Semester: {semester}</Text>
-          <Text style={styles.eventDetails}>Type: {type}</Text>
+          <Text style={styles.eventDetails}>Semester: {sem}</Text>
+          <Text style={styles.eventDetails}>Type: {type?type: "Type"}</Text>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={[styles.button, styles.editButton]} onPress={() => onEdit(event)}>

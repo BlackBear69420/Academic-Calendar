@@ -4,16 +4,17 @@ import colors from '../../assests/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FAB } from 'react-native-paper';
 import Modal from 'react-native-modal';
-import { addStreamHandler } from '../../../Backend/AdminAPICalls';
+import { addStreamHandler, editStream } from '../../../Backend/AdminAPICalls';
 
-const Department = () => {
+const EditStream = (props) => {
+  const data = props.route.params.stream;
   const [isModalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
-  const [sem, setSem] = useState(0);
-  const [depts, setDepts] = useState([]);
+  const [sem, setSem] = useState(data.semester);
+  const [depts, setDepts] = useState(data.departments?data.departments:[]);
   const [isTitleEditable, setTitleEditable] = useState(false);
-  const [titleValue, setTitleValue] = useState('Edit Stream Name');
+  const [titleValue, setTitleValue] = useState(data.stream);
   const [editText, setEditText] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
 
@@ -34,7 +35,7 @@ const Department = () => {
       departments: depts,
     };
     console.log(formData);
-    const res = await addStreamHandler(formData);
+    const res = await editStream(data.id, formData);
     if(res){
       Alert.alert("Sucessfully added stream");
     }
@@ -179,7 +180,7 @@ const Department = () => {
   );
 }
 
-export default Department;
+export default EditStream;
 
 const styles = StyleSheet.create({
   title: {

@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Platform, StatusBar,ScrollView } from 'react-native';
 import { TextInput, Snackbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import { checkUSNExists, signupHandler } from '../../../Backend/StudentAPICalls';
+import { fetchStreamDataArray } from '../../../Backend/AdminAPICalls';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [usn, setUSN] = useState('');
-  const [department, setDepartment] = useState('');
-  const [sem, setSem] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,14 +20,89 @@ const Signup = () => {
   const [snackbarType, setSnackbarType] = useState('error');
   const role = 'student';
 
+  const [open2, setOpen2] = useState(false);
+  const [value, setValue] = useState(null);
+  const [items, setItems] = useState([
+    {label: 'select stream', value: 'select stream'}
+  ]);
+
+  const [semopen, semsetOpen] = useState(false);
+  const [semvalue, semsetValue] = useState('select stream');
+  const [semitems, semsetItems] = useState([
+    {label: 'select stream', value: 'select stream'}
+  ]);
+
+  const [deptopen, deptsetOpen] = useState(false);
+  const [deptvalue, deptsetValue] = useState('select stream');
+  const [deptitems, deptsetItems] = useState([
+    {label: 'select stream', value: 'select stream'},
+  ]);
+
+  const [streamData, setStreamData] = useState(null);
+  
+  const transformStreamName = (streamName) => {
+    const ignoreWords = ["of","in"];
+    return streamName
+      .split(" ")
+      .filter(word => !ignoreWords.includes(word.toLowerCase()))
+      .map(word => word.charAt(0))
+      .join("");
+  };
+
+  useEffect(()=>{
+    const fetchData = async()=>{
+
+      const streamRes = await fetchStreamDataArray();
+      setStreamData(streamRes.streams);
+      const extractedStreams = streamRes?.streams.map(stream => ({
+        label: transformStreamName(stream.stream),
+        value: stream.stream,
+      }));
+      console.log(extractedStreams);
+      setItems(extractedStreams)
+    }
+    fetchData();
+  },[])
+
+  useEffect(()=>{
+    if(streamData){
+      const d = extractDepartments(streamData, value);
+      const s = extractSemesters(streamData, value);
+      deptsetItems(d);
+      semsetItems(s);
+    }
+  },[value]);
+
+
+  const extractSemesters = (data, streamName) => {
+  const filteredData = data.filter(stream => stream.stream === streamName);
+  if (filteredData.length === 0) return [];
+  
+  const maxSemester = Math.max(...filteredData.map(stream => stream.semester));
+  return Array.from({ length: maxSemester }, (_, i) => ({
+    label: (i + 1).toString(),
+    value: (i + 1).toString()
+  }));
+};
+
+const extractDepartments = (data, streamName) => {
+  const filteredData = data.filter(stream => stream.stream === streamName);
+  if (filteredData.length === 0) return [];
+  
+  const departmentsSet = new Set(filteredData.flatMap(stream => stream.departments));
+  return Array.from(departmentsSet).map(department => ({
+    label: department,
+    value: department
+  }));
+};
+
   const navigation = useNavigation();
 
   const handleSignUp = async () => {
     setSnackbarMessage('');
     setSnackbarType('error');
   
-    // if (!email || !password || !usn || !phoneNumber || !department || !sem) {
-        if (!email || !password) {
+    if (!email || !password || !usn || !phoneNumber || !deptvalue || !semvalue ||!value) {
       setSnackbarMessage('Please fill in all fields.');
       setSnackbarVisible(true);
       setLoading(false);
@@ -45,13 +120,18 @@ const Signup = () => {
           setSnackbarMessage('Usn already exisit. Please try login.');
           setSnackbarVisible(true);
       }else {
+        const department = deptvalue;
+        const stream = value;
+        const sem = semvalue;
         const res = signupHandler(email,
           password,
           role,
           usn,
           phoneNumber,
           department,
-          sem,);
+          sem,
+          stream,
+        );
   
         if (res) {
           setSnackbarMessage('Registered successfully');
@@ -155,27 +235,40 @@ const Signup = () => {
                 textColor='black'
                 mode='outlined'
               />
-              <TextInput
-                label="Stream"
-                value={department}
-                onChangeText={text => {
-                  setDepartment(text);
-                  setSnackbarMessage('');
-                }}
-                style={styles.input}
-                textColor='black'
-                mode='outlined'
+              <DropDownPicker
+                placeholder='select a stream'
+                open={open2}
+                value={value}
+                items={items}
+                setOpen={setOpen2}
+                setValue={setValue}
+                setItems={setItems}
+                zIndex={3000}
+                zIndexInverse={3000}
               />
-              <TextInput
-                label="Semester"
-                value={sem}
-                onChangeText={text => {
-                  setSem(text);
-                  setSnackbarMessage('');
-                }}
-                style={styles.input}
-                textColor='black'
-                mode='outlined'
+
+                <DropDownPicker
+                placeholder='select a department'
+                open={deptopen}
+                value={deptvalue}
+                items={deptitems}
+                setOpen={deptsetOpen}
+                setValue={deptsetValue}
+                setItems={deptsetItems}
+                zIndex={2000}
+                zIndexInverse={2000}
+              />
+
+              <DropDownPicker
+                placeholder='select a sem'
+                open={semopen}
+                value={semvalue}
+                items={semitems}
+                setOpen={semsetOpen}
+                setValue={semsetValue}
+                setItems={semsetItems}
+                zIndex={1000}
+                zIndexInverse={1000}
               />
               <TextInput
                 label="Password"

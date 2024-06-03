@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { saveRole } from "./InAppStore";
 
 url = `https://calenderapp-b6878-default-rtdb.firebaseio.com/`;
@@ -8,7 +9,9 @@ export const signupHandler = async(email,
   usn,
   phoneNumber,
   department,
-  sem,) =>{
+  sem,
+  stream
+) =>{
     const res = await fetch(
       `${url}studentData.json`,
       {
@@ -24,7 +27,7 @@ export const signupHandler = async(email,
           phoneNumber,
           department,
           sem,
-
+          stream
         }),
       }
     );
@@ -71,7 +74,8 @@ export const checkCredentials = async(emailToCheck, passwordToCheck) => {
         if (data[key].email === emailToCheck && data[key].password === passwordToCheck) {
           loginSuccessful = true;
           const role = data[key].role;
-          await saveRole(role);
+
+          await saveRole(role, data[key]);
           break;
         }
       }
@@ -88,3 +92,31 @@ export const checkCredentials = async(emailToCheck, passwordToCheck) => {
       return false;
     }
   }
+
+  export const fetchFilterEvents = async(stream, dept, sem) => {
+    try {
+      const response = await fetch(`${url}eventDataForm.json`);
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch event data');
+      }
+  
+      const data = await response.json();
+  
+      const eventsArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+      if(dept === 'no departments'){
+        return eventsArray.filter(event => 
+          event.stream === stream && 
+          event.sem === sem
+        );
+      }
+      return eventsArray.filter(event => 
+        event.stream === stream && 
+        event.dept === dept && 
+        event.sem === sem
+      );    } catch (error) {
+      console.error('Error fetching event data:', error);
+      return [];
+    }
+    
+  };
