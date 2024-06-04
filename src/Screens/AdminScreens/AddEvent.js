@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View,StatusBar, TouchableOpacity } from 'react-native';
+import { StyleSheet, View,StatusBar, TouchableOpacity, Alert } from 'react-native';
 import { Datepicker, Layout, Text, Input, Button, Spinner,RangeDatepicker } from '@ui-kitten/components';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DatePicker2 from 'react-native-date-picker'
 import colors from '../../assests/colors';
 import { TextInput } from 'react-native-paper';
 import { addEventHandler, fetchStreamDataArray } from '../../../Backend/AdminAPICalls';
+import { useRoute } from '@react-navigation/native';
 
-const AddEvent = () => {
+const AddEvent = (props) => {
+  const route = useRoute();
+  const { setCall, call } = route.params;
   const [date, setDate] = useState(null);
   const [time, setTime] = useState(new Date());
   const [title, setTitle] = useState('');
@@ -17,6 +20,7 @@ const AddEvent = () => {
   const [open, setOpen] = useState(false)
   const [range, setRange] = React.useState({});
 
+  console.log(call);
   const [open2, setOpen2] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
@@ -103,8 +107,6 @@ const extractDepartments = (data, streamName) => {
   }));
 };
 
-console.log(deptvalue);
-console.log(semvalue);
 
   const validateForm = () => {
     const errors = {};
@@ -150,9 +152,12 @@ console.log(semvalue);
       try{
         const res = await addEventHandler(formData);
         if (res) {
+          setCall(!call);
           console.log('Added event successfully');
+          Alert.alert('Added event successfully')
           setIsLoading(false); 
         } else {
+          Alert.alert('Failed to add event successfully')
           console.log('Failed to add event. Please try again.');
         }
       }catch(error){

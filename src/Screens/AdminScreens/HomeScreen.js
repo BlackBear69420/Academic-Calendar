@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ScrollView, SafeAreaView, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import EventCard from './EventCard';
 import { FAB } from 'react-native-paper';
 import colors from '../../assests/colors';
 import { fetchEventData, deleteEvent, fetchStreamDataArray } from '../../../Backend/AdminAPICalls';
+import { useFocusEffect } from '@react-navigation/native';
 
 const HomeScreen = ({navigation}) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -37,14 +38,15 @@ const HomeScreen = ({navigation}) => {
       .join("");
   };
 
-  useEffect(()=>{
-    const fetchData = async()=>{
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
         const res = await fetchEventData();
         setEvent(res);
         const streamRes = await fetchStreamDataArray();
         console.log(streamRes);
         const transformedStreams = streamRes?.streams.map(stream => ({
-            stream: transformStreamName(stream.stream),
+          stream: transformStreamName(stream.stream),
         }));
 
         console.log(transformedStreams);
@@ -52,9 +54,10 @@ const HomeScreen = ({navigation}) => {
         const uniqueCategories = ['All', ...new Set(transformedStreams.map(stream => stream.stream))];
         console.log(uniqueCategories);
         setCategories(uniqueCategories);
-    }
-    fetchData();
-  },[call]);
+      };
+      fetchData();
+    }, [call])
+  );
 
   const filteredEvents = selectedCategory === 'All' ? events : events?.filter(event => event.stream === selectedCategory);
 
@@ -81,7 +84,7 @@ const HomeScreen = ({navigation}) => {
         style={styles.fab}
         onPress={() => {
             setCall(!call);
-            navigation.navigate('AddEvent')
+            navigation.navigate('AddEvent',{setCall, call})
         }}
         color={colors.white}
       />

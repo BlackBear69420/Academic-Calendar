@@ -1,24 +1,27 @@
 import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import colors from '../../assests/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FAB } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { fetchStreamData, deleteStream } from '../../../Backend/AdminAPICalls';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Streams = () => {
   const navigation = useNavigation();
   const [streams, setStreams] = useState([]);
   const [call, setCall] = useState(false);
 
-  useEffect(() => {
+  useFocusEffect(
+    useCallback(() => {
     const fetchData = async () => {
       const data = await fetchStreamData();
       setStreams(data);
     };
 
     fetchData();
-  }, [call]);
+  }, [call])
+);
 
   const handleDelete = async (streamId) => {
     const isSuccess = await deleteStream(streamId);
@@ -60,7 +63,7 @@ const Streams = () => {
         style={styles.fab}
         onPress={() =>{ 
           setCall(!call);
-          navigation.navigate('AddDepartment')
+          navigation.navigate('AddDepartment');
         }}
         color={colors.white}
       />
