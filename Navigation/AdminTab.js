@@ -1,35 +1,87 @@
 import React from 'react';
+import { View, StyleSheet } from 'react-native';
+
+import { CommonActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import AddEvent from '../src/Screens/AdminScreens/AddEvent';
-import Department from '../src/Screens/AdminScreens/Department';
-import Streams from '../src/Screens/AdminScreens/Streams';
-import { NavigationContainer } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons'; // or any other icon set you prefer
+import { Text, BottomNavigation } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from '../src/Screens/AdminScreens/HomeScreen';
+import Streams from '../src/Screens/AdminScreens/Streams';
+import colors from '../src/assests/colors';
 
 const Tab = createBottomTabNavigator();
 export function AdminTab() {
     return (
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ color, size }) => {
-              let iconName;
-  
-              if (route.name === 'Events') {
-                iconName = 'calendar-clear-outline';
-              } else if (route.name === 'Stream') {
-                iconName = 'library-outline';
-              }
-                return <Icon name={iconName} size={size} color={color} />;
-            },
-            headerShown: false,
-            activeTintColor: 'tomato',
-            inactiveTintColor: 'gray',
-          })}
-        >
-          <Tab.Screen name="Events" component={HomeScreen} />
-          <Tab.Screen name="Stream" component={Streams} />
-        </Tab.Navigator>
+      <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+      tabBar={({ navigation, state, descriptors, insets }) => (
+        <BottomNavigation.Bar
+        activeColor={colors.primary}
+        activeIndicatorStyle={{backgroundColor:'aliceblue'}}
+          navigationState={state}
+          style={{backgroundColor:colors.lightBackground}}
+         safeAreaInsets={insets}
+          onTabPress={({ route, preventDefault }) => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (event.defaultPrevented) {
+              preventDefault();
+            } else {
+             navigation.dispatch({
+                ...CommonActions.navigate(route.name, route.params),
+                target: state.key,
+              });
+            }
+          }}
+          renderIcon={({ route, focused, color }) => {
+            const { options } = descriptors[route.key];
+            if (options.tabBarIcon) {
+              return options.tabBarIcon({ focused, color, size: 24 });
+            }
+
+            return null;
+          }}
+          getLabelText={({ route }) => {
+            const { options } = descriptors[route.key];
+            const label =
+              options.tabBarLabel !== undefined
+                ? options.tabBarLabel
+                : options.title !== undefined
+                ? options.title
+                : route.title;
+
+            return label;
+          }}
+        />
+      )}
+    >
+      <Tab.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color, size }) => {
+            return <Icon name="home" size={size} color={color} />;
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Streams"
+        component={Streams}
+        options={{
+          tabBarLabel: 'Streams',
+          tabBarIcon: ({ color, size }) => {
+            return <Icon name="ballot-outline" size={size} color={color} />;
+          },
+        }}
+      />
+    </Tab.Navigator>
     );
   }
   

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import colors from '../../assests/colors';
 
 const EventCard = ({ event, onEdit, onDelete }) => {
   const { title, description, dept, stream, sem, type } = event;
@@ -9,16 +10,16 @@ const EventCard = ({ event, onEdit, onDelete }) => {
 
   return (
     <View style={styles.cardContainer}>
-      <View style={styles.dateContainer}>
-        <Text style={styles.largeDate}>{day}</Text>
-        <Text style={styles.smallSuffix}>{suffix}</Text>
-      </View>
+      
       <View style={styles.contentContainer}>
         <Text style={styles.eventTitle}>{title}</Text>
+        <View style={styles.dateContainer}>
+        <Text style={styles.largeDate}>{date}</Text>
+      </View>
         <Text style={styles.eventDetails}>{description}</Text>
         <View style={styles.inlineDetails}>
-          <Text style={styles.eventDetails}>Department: {dept}</Text>
-          <Text style={styles.eventDetails}>Stream: {stream}</Text>
+        <Text style={styles.eventDetails}>Stream: {stream}</Text>
+          <Text style={styles.eventDetails}>{dept}</Text>
         </View>
         <View style={styles.inlineDetails}>
           <Text style={styles.eventDetails}>Semester: {sem}</Text>
@@ -57,18 +58,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   dateContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
   largeDate: {
-    fontSize: 52,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    lineHeight: 72,
   },
   smallSuffix: {
     fontSize: 24,
@@ -77,17 +75,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   contentContainer: {
-    marginLeft: 20,
     flex: 1,
   },
   eventTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
   },
   eventDetails: {
-    fontSize: 13,
-    color: '#666',
+    fontSize: 14,
+    color: colors.black,
     marginTop: 5,
   },
   inlineDetails: {
@@ -98,11 +95,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     marginTop: 10,
+    justifyContent:'space-between'
   },
   button: {
     padding: 10,
     borderRadius: 5,
-    marginRight: 10,
+    paddingHorizontal:20,
+    minWidth:80,
+    alignItems:'center'
   },
   editButton: {
     backgroundColor: '#4CAF50',

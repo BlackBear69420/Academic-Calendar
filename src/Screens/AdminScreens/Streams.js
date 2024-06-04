@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { FAB } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { fetchStreamData, deleteStream } from '../../../Backend/AdminAPICalls';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const Streams = () => {
   const navigation = useNavigation();
@@ -31,31 +32,40 @@ const Streams = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <>
+       <ScrollView contentContainerStyle={{flexGrow:1}}>
       <Text style={styles.header}>Streams</Text>
       <View style={styles.streamsContainer}>
         {streams.map((stream, index) => (
           <View key={index} style={styles.streamButton}>
-            <View>
               <Text style={styles.streamTitle}>{stream.stream}</Text>
+              <View style={{flexDirection:'row',justifyContent:'space-between'}}>
               <Text style={styles.streamDetails}>Departments: {stream.departmentsCount}</Text>
               <Text style={styles.streamDetails}>Semester: {stream.semester}</Text>
-            </View>
+              </View>
             <View style={styles.iconContainer}>
-              <TouchableOpacity onPress={() => {
+              <TouchableOpacity style={styles.iconStyle} onPress={() => {
                 setCall(!call);
                 navigation.navigate('EditStream', { stream })
                 }}>
-                <Icon name="pencil" size={18} color={colors.white} style={styles.iconStyle} />
+                   <Text style={{color:colors.black}}>
+                  Edit
+                </Text>
+                <Icon name="pencil" size={18} color={colors.black}  />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDelete(stream.id)}>
-                <Icon name="trash" size={18} color={colors.white} style={styles.iconStyle} />
+              <TouchableOpacity style={styles.iconStyle} onPress={() => handleDelete(stream.id)}>
+              <Text style={{color:colors.black}}>
+                  Delete
+                </Text>
+                <Icon name="trash" size={18} color={colors.black}  />
               </TouchableOpacity>
             </View>
           </View>
         ))}
       </View>
-      <FAB
+     
+   </ScrollView>
+   <FAB
         icon="plus"
         style={styles.fab}
         onPress={() =>{ 
@@ -64,7 +74,8 @@ const Streams = () => {
         }}
         color={colors.white}
       />
-    </View>
+    </>
+ 
   );
 };
 
@@ -88,19 +99,17 @@ const styles = StyleSheet.create({
   },
   streamButton: {
     borderWidth: 2,
-    borderRadius: 12,
+    borderRadius: 8,
     padding: 10,
     paddingHorizontal: 20,
     borderColor: colors.white,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: colors.black
+    backgroundColor: colors.black,
+    gap:8
   },
   streamTitle: {
     color: colors.white,
-    fontSize: 20,
-    fontWeight: 'bold'
+    fontSize: 16,
+    fontWeight:'bold'
   },
   streamDetails: {
     color: colors.white,
@@ -108,13 +117,16 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
+    justifyContent:'space-between',
+    width:'100%'
   },
   iconStyle: {
-    borderWidth: 2,
-    borderRadius: 40,
-    padding: 6,
-    borderColor: colors.white,
-    marginLeft: 10
+    borderRadius:4,
+    padding: 8,
+    flexDirection:'row',
+    backgroundColor:colors.white,
+    gap:15,
+    marginVertical:10
   },
   fab: {
     position: 'absolute',
