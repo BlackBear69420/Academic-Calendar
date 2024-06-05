@@ -6,6 +6,8 @@ import DatePicker2 from 'react-native-date-picker'
 import colors from '../../assests/colors';
 import { TextInput } from 'react-native-paper';
 import {editEvent, fetchStreamDataArray } from '../../../Backend/AdminAPICalls';
+import Icon from "react-native-vector-icons/FontAwesome";
+import { useNavigation } from "@react-navigation/native";
 
 const EditEvent = (props) => {
   const data = props.route.params.item;
@@ -17,7 +19,7 @@ const EditEvent = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false)
   const [range, setRange] = React.useState({});
-
+  const navigation = useNavigation();
   const [open2, setOpen2] = useState(false);
   const [value, setValue] = useState(data.stream);
   const [items, setItems] = useState([
@@ -46,6 +48,7 @@ const EditEvent = (props) => {
     {label: 'Industry Visit', value: 'Industry Visit'},
   ]);
 
+  useEffect(()=>{console.log(data)},[])
   const [streamData, setStreamData] = useState(null);
   
   const transformStreamName = (streamName) => {
@@ -164,8 +167,23 @@ const extractDepartments = (data, streamName) => {
 
   return (
     <Layout style={styles.container} level='1'>
-      <StatusBar backgroundColor={colors.primary} barStyle='light-content'/>
-      <Text style={styles.title}>Add Event</Text>
+      <StatusBar backgroundColor={colors.black} barStyle='light-content'/>
+      <View
+        style={{
+          flexDirection: "row",
+          backgroundColor: colors.black,
+          width: "100%",
+          paddingHorizontal: 20,
+          paddingVertical:20,
+          gap:20,
+          alignItems:'center'
+        }}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{}}>
+          <Icon name="arrow-left" size={20} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.title}>Edit Event</Text>
+      </View>
         <View style={{padding:20,gap:10}}>
         <View style={{
         justifyContent:'space-between',
@@ -188,8 +206,8 @@ const extractDepartments = (data, streamName) => {
         justifyContent:'space-between',
         alignSelf:'center'
     }}>
-         <TouchableOpacity  onPress={() => setOpen(true)} style={{width:'100%',alignItems:'center',borderWidth:1,paddingVertical:12,borderRadius:6,borderColor:colors.primary}}>
-        <Text style={{color:colors.primary}}>
+         <TouchableOpacity  onPress={() => setOpen(true)} style={{width:'100%',alignItems:'center',borderWidth:1,paddingVertical:12,borderRadius:6,borderColor:colors.black}}>
+        <Text style={{color:colors.black}}>
           {time?time.toLocaleTimeString():'Select Time'}
         </Text>
       </TouchableOpacity>
@@ -279,15 +297,18 @@ const extractDepartments = (data, streamName) => {
     />
       {errors.dept && <Text style={{ color: 'red' }}>{errors.dept}</Text>}
 
-      <Button
-        onPress={onSubmit}
-        style={styles.button}
-        size='medium'
-        disabled={isLoading} // Disable button while loading
-        accessoryLeft={isLoading ? LoadingIndicator : null} // Show loading indicator if loading
-      >
-        {isLoading ? 'Submitting...' : 'Submit'}
-      </Button>
+
+      <TouchableOpacity
+          onPress={onSubmit}
+          style={styles.button}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Text style={styles.buttonText}>Submit</Text>
+          )}
+        </TouchableOpacity>
         </View>
     </Layout>
   );
@@ -308,6 +329,14 @@ const styles = StyleSheet.create({
   },
   button: {
     margin: 2,
+    backgroundColor: colors.black,
+    padding: 15,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
   },
   indicator: {
     alignItems: 'center',
@@ -315,12 +344,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    color: 'white',
-    fontFamily: 'RobotoSlab-Bold',
-    alignSelf: 'center',
-    paddingVertical: 20,
-    backgroundColor:'#1338be',
-    width:'100%',
-    paddingHorizontal:20
+    color: "white",
+    fontFamily: "RobotoSlab-Bold",
   },
 });

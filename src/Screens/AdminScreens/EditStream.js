@@ -77,14 +77,17 @@ const EditStream = (props) => {
     <View style={{ flex: 1 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
         {isTitleEditable ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center',justifyContent:'space-around',gap:10 }}>
             <TextInput
               style={styles.editableTitle}
               value={titleValue}
+              autoFocus={true}
               onChangeText={setTitleValue}
+              width={250}
             />
-            <TouchableOpacity onPress={handleTitleSubmit}>
-              <Icon name="save" size={20} color={colors.black} />
+            <TouchableOpacity style={{flexDirection:'row',gap:10,backgroundColor:colors.black,padding:8,borderRadius:4}} onPress={handleTitleSubmit}>
+              <Text style={{color:colors.white}}>Save</Text>
+              <Icon name="save" size={20} color={colors.white} />
             </TouchableOpacity>
           </View>
         ) : (
@@ -117,15 +120,18 @@ const EditStream = (props) => {
         </View>
         {depts.map((dept, index) => (
           <View key={index} style={styles.departmentContainer}>
+          
+            <View>
+              <Text style={styles.departmentText}>{dept}</Text>
+            </View>
+            <View style={{flexDirection:'row',justifyContent:'space-between',width:'100%'}}>
             <TouchableOpacity
               style={styles.deleteButton}
               onPress={() => handleDeletion(index)}
             >
-              <Icon name="minus" size={15} color={colors.white} />
+              <Text style={{color:colors.black,fontSize:15}}>Delete</Text>
+              <Icon name="trash" size={18} color={colors.black} />
             </TouchableOpacity>
-            <View>
-              <Text style={styles.departmentText}>{dept}</Text>
-            </View>
             <TouchableOpacity
               style={styles.deleteButton}
               onPress={() => {
@@ -135,8 +141,12 @@ const EditStream = (props) => {
                 setModalVisible(true);
               }}
             >
-              <Icon name="pencil" size={20} color={colors.white} />
+              <Text style={{color:colors.black,fontSize:15}}>Edit</Text>
+              <Icon name="pencil" size={18} color={colors.black} />
               </TouchableOpacity>
+            </View>
+
+         
 
           </View>
         ))}
@@ -165,7 +175,7 @@ const EditStream = (props) => {
         </View>
       </Modal>
       <View style={styles.footer}>
-        <View style={{flex:0.7}}>
+        <View >
           <TouchableOpacity onPress={handleSubmitForm} style={styles.submitButton}>
             <Text style={styles.submitButtonText}>Submit</Text>
           </TouchableOpacity>
@@ -174,6 +184,7 @@ const EditStream = (props) => {
           icon="plus"
           style={styles.fab}
           onPress={() => setModalVisible(true)}
+          color={colors.white}
         />
       </View>
     </View>
@@ -188,27 +199,31 @@ const styles = StyleSheet.create({
     fontSize: 25,
     padding: 20,
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
+    maxWidth:'100%'
   },
   editableTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    padding: 20,
-    borderBottomWidth: 1,
+    padding: 8,
+    borderWidth: 2,
     borderColor: colors.black,
-    marginRight: 10,
+    borderRadius:8,
+    marginVertical:10,
   },
   container: {
     padding: 20,
-    gap: 25,
+    gap: 15,
     borderWidth: 2,
     marginHorizontal: 20,
-    borderRadius: 20,
+    borderRadius: 12,
     paddingBottom: 60,
     borderColor: colors.black
   },
   semesterContainer: {
-    alignItems: 'center'
+    alignItems: 'center',
+    flexDirection:'row',
+    justifyContent:'space-between'
   },
   semesterTitle: {
     color: colors.black,
@@ -217,7 +232,7 @@ const styles = StyleSheet.create({
   },
   semesterControls: {
     flexDirection: 'row',
-    gap: 40,
+    gap: 20,
     paddingVertical: 10
   },
   semesterButton: {
@@ -232,32 +247,28 @@ const styles = StyleSheet.create({
     color: colors.black
   },
   departmentContainer: {
-    borderWidth: 2,
-    borderRadius: 12,
-    padding: 10,
-    paddingHorizontal: 20,
-    borderColor: colors.black,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    borderRadius: 8,
+    padding: 15,
     backgroundColor: colors.black,
-    marginTop: 10
+    gap:15
   },
   deleteButton: {
-    borderWidth: 2,
-    borderRadius: 8,
+    borderRadius: 4,
     padding: 10,
-    borderColor: colors.white
+    flexDirection:'row',
+    gap:10,
+    alignItems:'center',
+    paddingVertical:6,
+    backgroundColor:colors.white
   },
   departmentText: {
     color: colors.white,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold'
   },
   fab: {
-    backgroundColor: '#F0F8FF',
-    color: '#007FFF',
-    height:60
+    backgroundColor: colors.black,
+    color:colors.white,
   },
   modal: {
     justifyContent: 'flex-end',
@@ -287,11 +298,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   submitButton: {
-    backgroundColor: '#007FFF',
+    backgroundColor: colors.black,
     paddingVertical: 12,
     borderRadius: 8,
-    marginBottom: 40,
-    paddingHorizontal: 40,
+    paddingHorizontal:80,
   },
   submitButtonText: {
     color: 'white',
@@ -306,6 +316,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent:'space-between',
     padding: 20,
-    backgroundColor: '#F0F8FF',
+    alignItems:'center',
+    justifyContent:'space-around'
   },
 });

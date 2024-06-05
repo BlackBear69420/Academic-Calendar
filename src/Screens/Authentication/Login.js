@@ -33,7 +33,7 @@ const Login = () => {
 
     try {
       const check = await checkCredentials(email, password);
-      console.log(check);
+      console.log('this',check);
       if (!email.includes('@')) {
         setSnackbarMessage('Invalid email');
         setSnackbarVisible(true);

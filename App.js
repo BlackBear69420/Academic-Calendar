@@ -9,10 +9,12 @@ import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
 import AdminNav from './Navigation/AdminNav';
 import { getRole } from './Backend/InAppStore';
 import { AdminTab } from './Navigation/AdminTab';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Provider as PaperProvider } from 'react-native-paper'; 
 
 function AppWrapper() {
   const isDarkMode = useColorScheme() === 'dark';
-  const { userId } = useContext(UserContext);
+  const { userId,setUserId } = useContext(UserContext);
   const [role, setRole] = useState(null);
 
   const fetchRole = async()=>{
@@ -21,6 +23,15 @@ function AppWrapper() {
       setRole(r);
     }
   }
+  useEffect(()=>{
+    const fetchUserId = async () => {
+      const id = await AsyncStorage.getItem('userEmail');
+      if (id) {
+        setUserId(id);
+      }
+    };
+    fetchUserId();
+  },[])
 
 
   useEffect(()=>{
@@ -33,9 +44,12 @@ function AppWrapper() {
   };
 
   return (
-    <View style={backgroundStyle}>
+    <PaperProvider>
+          <View style={backgroundStyle}>
       {userId && role ? (role=== 'admin'?<AdminNav/>: <StudentNav />) : <AuthNavigation />}
     </View>
+    </PaperProvider>
+
   );
 }
 

@@ -164,7 +164,7 @@ const Department = () => {
         </View>
       </Modal>
       <View style={styles.footer}>
-        <View style={{flex:0.7}}>
+        <View >
           <TouchableOpacity onPress={handleSubmitForm} style={styles.submitButton}>
             <Text style={styles.submitButtonText}>Submit</Text>
           </TouchableOpacity>
@@ -173,6 +173,7 @@ const Department = () => {
           icon="plus"
           style={styles.fab}
           onPress={() => setModalVisible(true)}
+          color={colors.white}
         />
       </View>
     </View>
@@ -254,9 +255,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   fab: {
-    backgroundColor: '#F0F8FF',
-    color: '#007FFF',
-    height:60
+    backgroundColor: colors.black,
   },
   modal: {
     justifyContent: 'flex-end',
@@ -286,11 +285,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   submitButton: {
-    backgroundColor: '#007FFF',
+    backgroundColor: colors.black,
     paddingVertical: 12,
     borderRadius: 8,
-    marginBottom: 40,
-    paddingHorizontal: 40,
+    paddingHorizontal:80
   },
   submitButtonText: {
     color: 'white',
@@ -303,8 +301,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     flexDirection: 'row',
-    justifyContent:'space-between',
-    padding: 20,
-    backgroundColor: '#F0F8FF',
+    justifyContent:'space-around',
+    padding:10
   },
 });

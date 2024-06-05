@@ -74,6 +74,7 @@ export const checkCredentials = async(emailToCheck, passwordToCheck) => {
         if (data[key].email === emailToCheck && data[key].password === passwordToCheck) {
           loginSuccessful = true;
           const role = data[key].role;
+          console.log(role)
 
           await saveRole(role, data[key]);
           break;

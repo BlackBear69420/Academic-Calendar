@@ -246,6 +246,7 @@ const extractDepartments = (data, streamName) => {
                 setItems={setItems}
                 zIndex={3000}
                 zIndexInverse={3000}
+                listMode='SCROLLVIEW'
               />
 
                 <DropDownPicker
@@ -258,6 +259,7 @@ const extractDepartments = (data, streamName) => {
                 setItems={deptsetItems}
                 zIndex={2000}
                 zIndexInverse={2000}
+                listMode='SCROLLVIEW'
               />
 
               <DropDownPicker
@@ -270,6 +272,7 @@ const extractDepartments = (data, streamName) => {
                 setItems={semsetItems}
                 zIndex={1000}
                 zIndexInverse={1000}
+                listMode='SCROLLVIEW'
               />
               <TextInput
                 label="Password"
