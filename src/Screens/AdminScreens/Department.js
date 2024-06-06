@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { FAB } from 'react-native-paper';
 import Modal from 'react-native-modal';
 import { addStreamHandler } from '../../../Backend/AdminAPICalls';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const Department = () => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -73,7 +74,7 @@ const Department = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
         {isTitleEditable ? (
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -176,7 +177,7 @@ const Department = () => {
           color={colors.white}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
