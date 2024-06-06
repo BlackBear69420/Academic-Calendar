@@ -63,7 +63,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={colors.lightBackground} barStyle='dark-content'></StatusBar>
+      <StatusBar backgroundColor={colors.black} barStyle='light-content'></StatusBar>
       <View style={styles.categoryFilter}>
         {categories?.map(category => (
           <TouchableOpacity
@@ -77,9 +77,6 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         ))}
       </View>
-      <TouchableOpacity onPress={logout}>
-        <Text>logout</Text>
-      </TouchableOpacity>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {events && filteredEvents.length > 0 ? (
           filteredEvents.map((event, index) => (
@@ -115,7 +112,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 10,
-    backgroundColor: colors.white,
+    backgroundColor: colors.black,
     elevation: 2,
   },
   categoryButton: {
@@ -124,14 +121,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   selectedCategoryButton: {
-    backgroundColor: colors.black,
+    backgroundColor: colors.white,
   },
   categoryText: {
     fontSize: 16,
-    color: colors.black,
+    color: colors.white,
   },
   selectedCategoryText: {
-    color: colors.white,
+    color: colors.black,
   },
   scrollViewContent: {
     flexGrow: 1,

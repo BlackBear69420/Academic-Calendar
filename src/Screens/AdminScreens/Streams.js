@@ -2,7 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import React, { useCallback, useState } from 'react';
 import colors from '../../assests/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { FAB } from 'react-native-paper';
+import { FAB, Dialog, Portal, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { fetchStreamData, deleteStream } from '../../../Backend/AdminAPICalls';
 import { useFocusEffect } from '@react-navigation/native';
@@ -12,73 +12,91 @@ const Streams = () => {
   const navigation = useNavigation();
   const [streams, setStreams] = useState([]);
   const [call, setCall] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [selectedStreamId, setSelectedStreamId] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
-    const fetchData = async () => {
-      const data = await fetchStreamData();
-      setStreams(data);
-    };
+      const fetchData = async () => {
+        const data = await fetchStreamData();
+        setStreams(data);
+      };
 
-    fetchData();
-  }, [call])
-);
+      fetchData();
+    }, [call])
+  );
 
-  const handleDelete = async (streamId) => {
-    const isSuccess = await deleteStream(streamId);
+  const handleDelete = (streamId) => {
+    setSelectedStreamId(streamId);
+    setDialogVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    const isSuccess = await deleteStream(selectedStreamId);
     if (isSuccess) {
-      setStreams((prevStreams) => prevStreams.filter(stream => stream.id !== streamId));
+      setStreams((prevStreams) => prevStreams.filter(stream => stream.id !== selectedStreamId));
       Alert.alert('Success', 'Stream deleted successfully');
     } else {
       Alert.alert('Error', 'Failed to delete stream');
     }
+    setDialogVisible(false);
   };
 
   return (
     <>
-       <ScrollView contentContainerStyle={{flexGrow:1}}>
-      <Text style={styles.header}>Streams</Text>
-      <View style={styles.streamsContainer}>
-        {streams.map((stream, index) => (
-          <View key={index} style={styles.streamButton}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <Text style={styles.header}>Streams</Text>
+        <View style={styles.streamsContainer}>
+          {streams.map((stream, index) => (
+            <View key={index} style={styles.streamButton}>
               <Text style={styles.streamTitle}>{stream.stream}</Text>
-              <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-              <Text style={styles.streamDetails}>Departments: {stream.departmentsCount}</Text>
-              <Text style={styles.streamDetails}>Semester: {stream.semester}</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.streamDetails}>Departments: {stream.departmentsCount}</Text>
+                <Text style={styles.streamDetails}>Semester: {stream.semester}</Text>
               </View>
-            <View style={styles.iconContainer}>
-              <TouchableOpacity style={styles.iconStyle} onPress={() => {
-                setCall(!call);
-                navigation.navigate('EditStream', { stream })
+              <View style={styles.iconContainer}>
+                <TouchableOpacity style={styles.iconStyle} onPress={() => {
+                  setCall(!call);
+                  navigation.navigate('EditStream', { stream });
                 }}>
-                   <Text style={{color:colors.black}}>
-                  Edit
-                </Text>
-                <Icon name="pencil" size={18} color={colors.black}  />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconStyle} onPress={() => handleDelete(stream.id)}>
-              <Text style={{color:colors.black}}>
-                  Delete
-                </Text>
-                <Icon name="trash" size={18} color={colors.black}  />
-              </TouchableOpacity>
+                  <Text style={{ color: colors.black }}>
+                    Edit
+                  </Text>
+                  <Icon name="pencil" size={18} color={colors.black} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.iconStyle} onPress={() => handleDelete(stream.id)}>
+                  <Text style={{ color: colors.black }}>
+                    Delete
+                  </Text>
+                  <Icon name="trash" size={18} color={colors.black} />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        ))}
-      </View>
-     
-   </ScrollView>
-   <FAB
+          ))}
+        </View>
+      </ScrollView>
+      <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() =>{ 
+        onPress={() => {
           setCall(!call);
           navigation.navigate('AddDepartment');
         }}
         color={colors.white}
       />
+      <Portal>
+        <Dialog style={{backgroundColor:colors.lightBackground}} visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
+          <Dialog.Title>Confirm Deletion</Dialog.Title>
+          <Dialog.Content>
+            <Text>Are you sure you want to delete this stream?</Text>
+          </Dialog.Content>
+          <Dialog.Actions style={{justifyContent:'space-around'}}>
+            <Button onPress={() => setDialogVisible(false)}>Cancel</Button>
+            <Button onPress={confirmDelete}>Yes</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </>
- 
   );
 };
 
@@ -86,11 +104,12 @@ export default Streams;
 
 const styles = StyleSheet.create({
   header: {
-    color: colors.black,
-    fontSize: 25,
+    color: colors.white,
+    fontSize: 20,
     textAlign: 'center',
-    paddingVertical: 10,
-    fontWeight: 'bold'
+    paddingVertical: 20,
+    fontWeight: 'bold',
+    backgroundColor: colors.black
   },
   streamsContainer: {
     margin: 20,
@@ -107,12 +126,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderColor: colors.white,
     backgroundColor: colors.black,
-    gap:8
+    gap: 8
   },
   streamTitle: {
     color: colors.white,
     fontSize: 16,
-    fontWeight:'bold'
+    fontWeight: 'bold'
   },
   streamDetails: {
     color: colors.white,
@@ -120,16 +139,16 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
-    justifyContent:'space-between',
-    width:'100%'
+    justifyContent: 'space-between',
+    width: '100%'
   },
   iconStyle: {
-    borderRadius:4,
+    borderRadius: 4,
     padding: 8,
-    flexDirection:'row',
-    backgroundColor:colors.white,
-    gap:15,
-    marginVertical:10
+    flexDirection: 'row',
+    backgroundColor: colors.white,
+    gap: 15,
+    marginVertical: 10
   },
   fab: {
     position: 'absolute',

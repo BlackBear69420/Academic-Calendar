@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from '../src/Screens/AdminScreens/HomeScreen';
 import Streams from '../src/Screens/AdminScreens/Streams';
 import colors from '../src/assests/colors';
+import AdminProfile from '../src/Screens/AdminScreens/AdminProfile';
 
 const Tab = createBottomTabNavigator();
 export function AdminTab() {
@@ -78,6 +79,16 @@ export function AdminTab() {
           tabBarLabel: 'Streams',
           tabBarIcon: ({ color, size }) => {
             return <Icon name="ballot-outline" size={size} color={color} />;
+          },
+        }}
+      />
+      <Tab.Screen
+        name="AdminProfile"
+        component={AdminProfile}
+        options={{
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => {
+            return <Icon name="account" size={size} color={color} />;
           },
         }}
       />
