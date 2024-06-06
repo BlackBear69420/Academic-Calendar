@@ -10,7 +10,7 @@ import AdminNav from './Navigation/AdminNav';
 import { getRole, getUserdata } from './Backend/InAppStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Provider as PaperProvider } from 'react-native-paper'; 
-import messaging from '@react-native-firebase/messaging'
+import messaging from '@react-native-firebase/messaging';
 import { requestUserPermission } from './Backend/Notification';
 import PushNotification from 'react-native-push-notification';
 
@@ -71,7 +71,7 @@ function AppWrapper() {
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       console.log('Message handled in the background!', remoteMessage);
     });
-  },[role])
+  },[role, userId]);
 
   const fetchRole = async()=>{
     if(userId){

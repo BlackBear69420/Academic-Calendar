@@ -18,8 +18,7 @@ const Signup = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarType, setSnackbarType] = useState('error');
-  // const role = 'student';
-  const role = 'admin';
+  const role = 'student';
 
   const [open2, setOpen2] = useState(false);
   const [value, setValue] = useState(null);

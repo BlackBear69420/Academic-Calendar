@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging'
 
 export const saveRole = async (role, data) => {
   try {
@@ -76,7 +77,22 @@ export const getUserdata = async () => {
 
 export const logout = async () => {
   try {
-    await AsyncStorage.removeItem('userRole');
+    const role = await getRole();
+    if (role != 'admin') {
+        const user = await getUserdata();
+        if (user.stream && user.dept && user.sem) 
+        {
+          const topic = `${user.stream}${user.dept}${user.sem}`.replace(/\s+/g, '');
+
+          console.log("Unsubscribing from topic:", topic);
+
+          messaging().unsubscribeFromTopic(topic)
+            .then(() => console.log(`Unsubscribed from topic: ${topic}`))
+            .catch(error => console.error('Error unsubscribing from topic:', error));
+        }
+    }
+
+      await AsyncStorage.removeItem('userRole');
     await AsyncStorage.removeItem('userDept');
     await AsyncStorage.removeItem('userSem');
     await AsyncStorage.removeItem('userStream');

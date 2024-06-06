@@ -121,3 +121,41 @@ export const checkCredentials = async(emailToCheck, passwordToCheck) => {
     }
     
   };
+
+
+  export const updatePassword = async (usn, email, newPassword) => {
+
+    const userData = await fetch(`${url}studentData.json`);
+    const userDataJson = await userData.json();
+  
+    let userKey = null;
+    let user = null;
+
+    for (const key in userDataJson) {
+      if (userDataJson[key].usn === usn && userDataJson[key].email === email) {
+        userKey = key;
+        user = userDataJson[key];
+        break;
+      }
+    }
+
+    console.log(user);
+  
+    if (user) {
+      user.password = newPassword;
+  
+      const res = await fetch(`${url}studentData/${userKey}.json`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      });
+      console.log(res);
+  
+      if (res.ok) {
+        return true;
+      }
+    }
+    return false;
+  };

@@ -28,7 +28,7 @@ const Home = () => {
       const user = await getUserdata();
       console.log('data', user);
       setUserData(user);
-      const stream = transformStreamName(user.stream);
+      const stream = user.stream;
       const data = await fetchFilterEvents(stream, user.dept, user.sem);
       console.log('Event data', data);
       setEventData(data);

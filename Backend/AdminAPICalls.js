@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import { sendMessageEvent } from './Notification';
 url = `https://calenderapp-b6878-default-rtdb.firebaseio.com/`;
 
 export const addEventHandler = async(formData) =>{
@@ -13,6 +14,7 @@ export const addEventHandler = async(formData) =>{
       }
     );
      if(res1.ok){
+      await sendMessageEvent(formData);
       return true;
      }
      return false;
