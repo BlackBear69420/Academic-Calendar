@@ -7,7 +7,7 @@ import StudentNav from './Navigation/StudentNav';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
 import AdminNav from './Navigation/AdminNav';
-import { getRole } from './Backend/InAppStore';
+import { getRole, getUserdata } from './Backend/InAppStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Provider as PaperProvider } from 'react-native-paper'; 
 import messaging from '@react-native-firebase/messaging'
@@ -49,14 +49,29 @@ function AppWrapper() {
       });
     });
 
-    messaging()
-  .subscribeToTopic('allDevices')
-  .then(() => console.log('Subscribed to topic!'));
+    if(userId && role!='admin')
+    {
+      const fetchData = async () => {
+        const user = await getUserdata();
+        console.log('data', user);
+        if(user.stream && user.dept &&user.sem)
+          {
+            console.log("Indeis subscribe");
+            let concatenatedString = `${user.stream}${user.dept}${user.sem}`;
+            let result = concatenatedString.replace(/\s+/g, '');
+            console.log(`Befire Subscribed to topic!${result}`)
+            messaging()
+            .subscribeToTopic(`${result}`)
+            .then(() => console.log(`Subscribed to topic!${result}`));
+          }
+      };
+      fetchData();
+    }
     
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       console.log('Message handled in the background!', remoteMessage);
     });
-  },[])
+  },[role])
 
   const fetchRole = async()=>{
     if(userId){

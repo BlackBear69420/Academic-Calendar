@@ -6,6 +6,7 @@ import { Calendar } from 'react-native-calendars';
 import { fetchFilterEvents } from '../../../Backend/StudentAPICalls';
 import { getUserdata, logout } from '../../../Backend/InAppStore';
 import { useNavigation } from '@react-navigation/native';
+import messaging from '@react-native-firebase/messaging'
 
 const Home = () => {
   const [date, setDate] = React.useState(new Date());
