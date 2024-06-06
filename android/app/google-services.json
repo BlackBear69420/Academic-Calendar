@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "894332631176",
+    "firebase_url": "https://calenderapp-b6878-default-rtdb.firebaseio.com",
+    "project_id": "calenderapp-b6878",
+    "storage_bucket": "calenderapp-b6878.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894332631176:android:d4d169fdb8c78d9bde473d",
+        "android_client_info": {
+          "package_name": "com.calendar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBat-JBr7bPs6IHJEiOQpcL6lJB3OxPyVg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

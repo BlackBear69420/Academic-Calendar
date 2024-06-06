@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View,StatusBar, TouchableOpacity } from 'react-native';
-import { Datepicker, Layout, Text, Input, Button, Spinner,RangeDatepicker } from '@ui-kitten/components';
+import { Datepicker, Layout, Text, Input, Button, Spinner,RangeDatepicker, ActivityIndicator } from '@ui-kitten/components';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DatePicker2 from 'react-native-date-picker'
 import colors from '../../assests/colors';

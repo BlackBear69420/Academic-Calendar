@@ -1,10 +1,10 @@
 import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import colors from '../../assests/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FAB } from 'react-native-paper';
 import Modal from 'react-native-modal';
-import { addStreamHandler, editStream } from '../../../Backend/AdminAPICalls';
+import { addStreamHandler, deleteSemRelatedData, editStream, editStreamTitleRelatedData } from '../../../Backend/AdminAPICalls';
 
 const EditStream = (props) => {
   const data = props.route.params.stream;
@@ -17,6 +17,9 @@ const EditStream = (props) => {
   const [titleValue, setTitleValue] = useState(data.stream);
   const [editText, setEditText] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+  const [missingDepts, setmissingDepts] = useState([]);
+  const [editedDepts, setEditedDepts] = useState([]);
+
 
   const handleSubmit = () => {
     if (inputValue.trim() === '') {
@@ -35,19 +38,40 @@ const EditStream = (props) => {
       departments: depts,
     };
     console.log(formData);
-    const res = await editStream(data.id, formData);
+    if(data.stream != titleValue){
+      await editStreamTitleRelatedData(data.stream, titleValue);
+    }
+    const res = await editStream(data.id, formData,data.stream, missingDepts, editedDepts);
+
     if(res){
       Alert.alert("Sucessfully added stream");
     }
   }
 
   const handleDeletion = (index) => {
+    console.log(depts[index]);
     const newDepts = [...depts];
+
+    const newMissingData = [...missingDepts];
+    newMissingData.push(depts[index]);
+    setmissingDepts(newMissingData);
+    
     newDepts.splice(index, 1);
     setDepts(newDepts);
   };
 
+  const isEdited = (text) => editedDepts.find(item => item.new === text);
+
   const handleEdit = (index, text) => {
+
+    const editedDataDept = [...editedDepts];
+    editedDataDept.push({
+      new:text,
+      old: depts[index],
+    })
+    setEditedDepts(editedDataDept);
+    console.log(editedDataDept);
+
     const newDepts = [...depts];
     newDepts[index] = text;
     setEditIndex(null);
@@ -64,7 +88,7 @@ const EditStream = (props) => {
   };
 
   const decrementSem = () => {
-    if (sem > 0) {
+    if (sem > data.semester) {
       setSem(sem - 1);
     }
   };
@@ -135,10 +159,12 @@ const EditStream = (props) => {
             <TouchableOpacity
               style={styles.deleteButton}
               onPress={() => {
-                setEditIndex(index);
-                setEditText(true);
-                setInputValue(dept);
-                setModalVisible(true);
+                if (!isEdited(dept)) {
+                  setEditIndex(index);
+                  setEditText(true);
+                  setInputValue(dept);
+                  setModalVisible(true);
+                }
               }}
             >
               <Text style={{color:colors.black,fontSize:15}}>Edit</Text>

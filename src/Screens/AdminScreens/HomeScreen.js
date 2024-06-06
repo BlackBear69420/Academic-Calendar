@@ -59,7 +59,7 @@ const HomeScreen = ({ navigation }) => {
     }, [call])
   );
 
-  const filteredEvents = selectedCategory === 'All' ? events : events?.filter(event => event.stream === selectedCategory);
+  const filteredEvents = selectedCategory === 'All' ? events : events?.filter(event => transformStreamName(event.stream) === selectedCategory);
 
   return (
     <SafeAreaView style={styles.container}>

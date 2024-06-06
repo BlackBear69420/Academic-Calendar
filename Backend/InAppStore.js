@@ -18,7 +18,6 @@ export const saveRole = async (role, data) => {
     } else {
       // Save the given data for other roles
       await AsyncStorage.setItem('userRole', role);
-<<<<<<< HEAD
       console.log(data);
       if(role != 'admin')
       {
@@ -29,16 +28,6 @@ export const saveRole = async (role, data) => {
         await AsyncStorage.setItem('userUsn', data.usn);
       }
       console.log('Role saved successfully');
-    } catch (error) {
-      console.error('Failed to save the role to Async Storage', error);
-=======
-      await AsyncStorage.setItem('userDept', data.department);
-      await AsyncStorage.setItem('userSem', data.sem);
-      await AsyncStorage.setItem('userStream', data.stream);
-      await AsyncStorage.setItem('userEmail', data.email);
-      await AsyncStorage.setItem('userUsn', data.usn);
-      await AsyncStorage.setItem('userData', JSON.stringify(data));
->>>>>>> 54bc770371c6505b2ab309dcfc656bf983ce7d0f
     }
 
     console.log('Role saved successfully');

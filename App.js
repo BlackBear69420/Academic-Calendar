@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useColorScheme, View } from 'react-native';
+import { useColorScheme, View , Alert} from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { UserContext, UserProvider } from './UserContext';
 import AuthNavigation from './Navigation/AuthNavigation';
@@ -8,14 +8,55 @@ import * as eva from '@eva-design/eva';
 import { ApplicationProvider, Layout, Text } from '@ui-kitten/components';
 import AdminNav from './Navigation/AdminNav';
 import { getRole } from './Backend/InAppStore';
-import { AdminTab } from './Navigation/AdminTab';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Provider as PaperProvider } from 'react-native-paper'; 
+import messaging from '@react-native-firebase/messaging'
+import { requestUserPermission } from './Backend/Notification';
+import PushNotification from 'react-native-push-notification';
 
 function AppWrapper() {
   const isDarkMode = useColorScheme() === 'dark';
   const { userId,setUserId } = useContext(UserContext);
   const [role, setRole] = useState(null);
+
+
+  useEffect(() => {
+    requestUserPermission();
+    const checkToken = async () => {
+      const fcmToken = await messaging().getToken();
+      if (fcmToken) {
+         console.log(fcmToken);
+      } 
+     }
+
+     
+     checkToken();
+
+
+     return messaging().onTokenRefresh(token => {
+      console.log('Device FCM Token refreshed: ', token);
+    });
+  }, []);
+
+  useEffect(()=>{
+    messaging().onMessage(async remoteMessage => {
+      console.log("Message REcived");
+      console.log("Foreground notification:", remoteMessage);
+      PushNotification.localNotification({
+        channelId: 'fcm_fallback_notification_channel',
+        title: remoteMessage.notification.title || 'Notification Title',
+        message: remoteMessage.notification.body || 'Notification Body',
+      });
+    });
+
+    messaging()
+  .subscribeToTopic('allDevices')
+  .then(() => console.log('Subscribed to topic!'));
+    
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage);
+    });
+  },[])
 
   const fetchRole = async()=>{
     if(userId){

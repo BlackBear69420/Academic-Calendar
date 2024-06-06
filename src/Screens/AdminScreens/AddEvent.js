@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Alert
 } from "react-native";
 import { RangeDatepicker, Layout, Text } from "@ui-kitten/components";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -13,10 +14,11 @@ import DatePicker2 from "react-native-date-picker";
 import colors from "../../assests/colors";
 import { TextInput } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation , useRoute} from "@react-navigation/native";
 import {
   addEventHandler,
   fetchStreamDataArray,
+
 } from "../../../Backend/AdminAPICalls";
 
 const AddEvent = (props) => {
@@ -83,6 +85,7 @@ const AddEvent = (props) => {
     };
     fetchData();
   }, []);
+
 
   useEffect(() => {
     if (streamData) {
@@ -154,7 +157,7 @@ const AddEvent = (props) => {
         time: time.toLocaleTimeString(),
         title: title,
         description: description,
-        stream: transformStreamName(value),
+        stream: value,
         sem: semvalue,
         dept: deptvalue,
         range: dateData,
@@ -164,7 +167,6 @@ const AddEvent = (props) => {
       try {
         const res = await addEventHandler(formData);
         if (res) {
-          setCall(!call);
           console.log('Added event successfully');
           Alert.alert('Added event successfully')
           setIsLoading(false); 
@@ -283,6 +285,7 @@ const AddEvent = (props) => {
           setItems={typesetItems}
           zIndex={4000}
           zIndexInverse={4000}
+          listMode="SCROLLVIEW"
         />
         {errors.type && <Text style={{ color: "red" }}>{errors.type}</Text>}
 
@@ -296,6 +299,7 @@ const AddEvent = (props) => {
           setItems={setItems}
           zIndex={3000}
           zIndexInverse={3000}
+          listMode="SCROLLVIEW"
         />
         {errors.stream && <Text style={{ color: "red" }}>{errors.stream}</Text>}
 
@@ -309,6 +313,7 @@ const AddEvent = (props) => {
           setItems={deptsetItems}
           zIndex={2000}
           zIndexInverse={2000}
+          listMode="SCROLLVIEW"
         />
         {errors.dept && <Text style={{ color: "red" }}>{errors.dept}</Text>}
 
@@ -322,6 +327,7 @@ const AddEvent = (props) => {
           setItems={semsetItems}
           zIndex={1000}
           zIndexInverse={1000}
+          listMode="SCROLLVIEW"
         />
         {errors.sem && <Text style={{ color: "red" }}>{errors.sem}</Text>}
 
