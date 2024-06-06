@@ -1,10 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert,ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import colors from '../../assests/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FAB } from 'react-native-paper';
 import Modal from 'react-native-modal';
 import { addStreamHandler } from '../../../Backend/AdminAPICalls';
+import { useNavigation } from '@react-navigation/native';
 
 const Department = () => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -16,6 +17,8 @@ const Department = () => {
   const [titleValue, setTitleValue] = useState('Edit Stream Name');
   const [editText, setEditText] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigation=useNavigation()
 
   const handleSubmit = () => {
     if (inputValue.trim() === '') {
@@ -28,6 +31,7 @@ const Department = () => {
   };
 
   const handleSubmitForm = async() => {
+    setLoading(true);
     const formData = {
       stream: titleValue,
       semester: sem,
@@ -36,8 +40,10 @@ const Department = () => {
     console.log(formData);
     const res = await addStreamHandler(formData);
     if(res){
-      Alert.alert("Sucessfully added stream");
+      Alert.alert('Success',"Sucessfully added stream");
+      navigation.goBack()
     }
+    setLoading(false);
   }
 
   const handleDeletion = (index) => {
@@ -76,14 +82,17 @@ const Department = () => {
     <View style={{ flex: 1 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
         {isTitleEditable ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{flexDirection: 'row', alignItems: 'center',justifyContent:'space-around',gap:10 }}>
             <TextInput
               style={styles.editableTitle}
               value={titleValue}
+              autoFocus={true}
               onChangeText={setTitleValue}
+              width={250}
             />
-            <TouchableOpacity onPress={handleTitleSubmit}>
-              <Icon name="save" size={20} color={colors.black} />
+              <TouchableOpacity style={{flexDirection:'row',gap:10,backgroundColor:colors.black,padding:8,borderRadius:4}} onPress={handleTitleSubmit}>
+              <Text style={{color:colors.white}}>Save</Text>
+              <Icon name="save" size={20} color={colors.white} />
             </TouchableOpacity>
           </View>
         ) : (
@@ -114,6 +123,13 @@ const Department = () => {
             </TouchableOpacity>
           </View>
         </View>
+        <FAB
+          icon="plus"
+          style={styles.fab}
+          onPress={() => setModalVisible(true)}
+          color={colors.white}
+          label='Add department'
+        />
         {depts.map((dept, index) => (
           <View key={index} style={styles.departmentContainer}>
             <TouchableOpacity
@@ -166,15 +182,14 @@ const Department = () => {
       <View style={styles.footer}>
         <View >
           <TouchableOpacity onPress={handleSubmitForm} style={styles.submitButton}>
+          {loading ? (
+                    <ActivityIndicator size={24} color="white" />
+                  ) : (
             <Text style={styles.submitButtonText}>Submit</Text>
+                  )}
           </TouchableOpacity>
         </View>
-        <FAB
-          icon="plus"
-          style={styles.fab}
-          onPress={() => setModalVisible(true)}
-          color={colors.white}
-        />
+       
       </View>
     </View>
   );
@@ -193,10 +208,11 @@ const styles = StyleSheet.create({
   editableTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    padding: 20,
-    borderBottomWidth: 1,
+    padding: 8,
+    borderWidth: 2,
     borderColor: colors.black,
-    marginRight: 10,
+    borderRadius:8,
+    marginVertical:10,
   },
   container: {
     padding: 20,
@@ -288,7 +304,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.black,
     paddingVertical: 12,
     borderRadius: 8,
-    paddingHorizontal:80
+    paddingHorizontal:80,
+    elevation:5
+
   },
   submitButtonText: {
     color: 'white',

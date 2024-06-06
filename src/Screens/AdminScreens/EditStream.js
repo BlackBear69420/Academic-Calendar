@@ -2,7 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert } from 'reac
 import React, { useEffect, useState } from 'react';
 import colors from '../../assests/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { FAB } from 'react-native-paper';
+import { FAB, Dialog, Portal, Button, ActivityIndicator } from 'react-native-paper';
 import Modal from 'react-native-modal';
 import { addStreamHandler, deleteSemRelatedData, editStream, editStreamTitleRelatedData } from '../../../Backend/AdminAPICalls';
 
@@ -12,14 +12,26 @@ const EditStream = (props) => {
   const [inputValue, setInputValue] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [sem, setSem] = useState(data.semester);
-  const [depts, setDepts] = useState(data.departments?data.departments:[]);
+  const [depts, setDepts] = useState(data.departments ? data.departments : []);
   const [isTitleEditable, setTitleEditable] = useState(false);
   const [titleValue, setTitleValue] = useState(data.stream);
   const [editText, setEditText] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
-  const [missingDepts, setmissingDepts] = useState([]);
+  const [missingDepts, setMissingDepts] = useState([]);
   const [editedDepts, setEditedDepts] = useState([]);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
+  useEffect(() => {
+    setHasChanges(
+      data.stream !== titleValue ||
+      data.semester !== sem ||
+      data.departments.length !== depts.length ||
+      JSON.stringify(data.departments) !== JSON.stringify(depts)
+    );
+  }, [titleValue, sem, depts]);
 
   const handleSubmit = () => {
     if (inputValue.trim() === '') {
@@ -31,42 +43,50 @@ const EditStream = (props) => {
     }
   };
 
-  const handleSubmitForm = async() => {
+  const handleSubmitForm = async () => {
+    setLoading(true);
     const formData = {
       stream: titleValue,
       semester: sem,
       departments: depts,
     };
     console.log(formData);
-    if(data.stream != titleValue){
+    if (data.stream !== titleValue) {
       await editStreamTitleRelatedData(data.stream, titleValue);
     }
-    const res = await editStream(data.id, formData,data.stream, missingDepts, editedDepts);
+    const res = await editStream(data.id, formData, data.stream, missingDepts, editedDepts);
 
-    if(res){
-      Alert.alert("Sucessfully added stream");
+    if (res) {
+      Alert.alert("Successfully updated stream");
     }
+    setLoading(false);
   }
 
-  const handleDeletion = (index) => {
-    console.log(depts[index]);
-    const newDepts = [...depts];
+  const handleDelete = (index) => {
+    setDeleteIndex(index);
+    setDialogVisible(true);
+  };
 
-    const newMissingData = [...missingDepts];
-    newMissingData.push(depts[index]);
-    setmissingDepts(newMissingData);
-    
-    newDepts.splice(index, 1);
-    setDepts(newDepts);
+  const confirmDelete = () => {
+    if (deleteIndex !== null) {
+      const newDepts = [...depts];
+      const newMissingData = [...missingDepts];
+      newMissingData.push(depts[deleteIndex]);
+      setMissingDepts(newMissingData);
+
+      newDepts.splice(deleteIndex, 1);
+      setDepts(newDepts);
+    }
+    setDialogVisible(false);
+    setDeleteIndex(null);
   };
 
   const isEdited = (text) => editedDepts.find(item => item.new === text);
 
   const handleEdit = (index, text) => {
-
     const editedDataDept = [...editedDepts];
     editedDataDept.push({
-      new:text,
+      new: text,
       old: depts[index],
     })
     setEditedDepts(editedDataDept);
@@ -101,7 +121,7 @@ const EditStream = (props) => {
     <View style={{ flex: 1 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
         {isTitleEditable ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center',justifyContent:'space-around',gap:10 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', gap: 10 }}>
             <TextInput
               style={styles.editableTitle}
               value={titleValue}
@@ -109,8 +129,8 @@ const EditStream = (props) => {
               onChangeText={setTitleValue}
               width={250}
             />
-            <TouchableOpacity style={{flexDirection:'row',gap:10,backgroundColor:colors.black,padding:8,borderRadius:4}} onPress={handleTitleSubmit}>
-              <Text style={{color:colors.white}}>Save</Text>
+            <TouchableOpacity style={{ flexDirection: 'row', gap: 10, backgroundColor: colors.black, padding: 8, borderRadius: 4 }} onPress={handleTitleSubmit}>
+              <Text style={{ color: colors.white }}>Save</Text>
               <Icon name="save" size={20} color={colors.white} />
             </TouchableOpacity>
           </View>
@@ -142,38 +162,41 @@ const EditStream = (props) => {
             </TouchableOpacity>
           </View>
         </View>
+        <FAB
+        icon="plus"
+        style={styles.fab}
+        onPress={() => setModalVisible(true)}
+        color={colors.white}
+        label='Add Department'
+      />
         {depts.map((dept, index) => (
           <View key={index} style={styles.departmentContainer}>
-          
             <View>
               <Text style={styles.departmentText}>{dept}</Text>
             </View>
-            <View style={{flexDirection:'row',justifyContent:'space-between',width:'100%'}}>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => handleDeletion(index)}
-            >
-              <Text style={{color:colors.black,fontSize:15}}>Delete</Text>
-              <Icon name="trash" size={18} color={colors.black} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => {
-                if (!isEdited(dept)) {
-                  setEditIndex(index);
-                  setEditText(true);
-                  setInputValue(dept);
-                  setModalVisible(true);
-                }
-              }}
-            >
-              <Text style={{color:colors.black,fontSize:15}}>Edit</Text>
-              <Icon name="pencil" size={18} color={colors.black} />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDelete(index)}
+              >
+                <Text style={{ color: colors.black, fontSize: 15 }}>Delete</Text>
+                <Icon name="trash" size={18} color={colors.black} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => {
+                  if (!isEdited(dept)) {
+                    setEditIndex(index);
+                    setEditText(true);
+                    setInputValue(dept);
+                    setModalVisible(true);
+                  }
+                }}
+              >
+                <Text style={{ color: colors.black, fontSize: 15 }}>Edit</Text>
+                <Icon name="pencil" size={18} color={colors.black} />
               </TouchableOpacity>
             </View>
-
-         
-
           </View>
         ))}
       </View>
@@ -183,7 +206,7 @@ const EditStream = (props) => {
         style={styles.modal}
       >
         <View style={styles.modalContainer}>
-          {editText?<Text style={styles.modalTitle}>Edit Department</Text>:<Text style={styles.modalTitle}>Add Department</Text>}
+          {editText ? <Text style={styles.modalTitle}>Edit Department</Text> : <Text style={styles.modalTitle}>Add Department</Text>}
           <TextInput
             style={[
               styles.input,
@@ -195,24 +218,36 @@ const EditStream = (props) => {
             onFocus={() => setIsInputFocused(true)}
             onBlur={() => setIsInputFocused(false)}
           />
-          <TouchableOpacity onPress={()=>{!editText?handleSubmit():handleEdit(editIndex, inputValue)}} style={styles.submitButton}>
+          <TouchableOpacity onPress={() => { !editText ? handleSubmit() : handleEdit(editIndex, inputValue) }} style={styles.submitButton}>
             <Text style={styles.submitButtonText}>Submit</Text>
           </TouchableOpacity>
         </View>
       </Modal>
-      <View style={styles.footer}>
-        <View >
-          <TouchableOpacity onPress={handleSubmitForm} style={styles.submitButton}>
-            <Text style={styles.submitButtonText}>Submit</Text>
+    
+      <Portal>
+        <Dialog style={{ backgroundColor: colors.lightBackground }} visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
+          <Dialog.Title>Confirm Deletion</Dialog.Title>
+          <Dialog.Content>
+            <Text>Are you sure you want to delete this department?</Text>
+          </Dialog.Content>
+          <Dialog.Actions style={{ justifyContent: 'space-around' }}>
+            <Button onPress={() => setDialogVisible(false)}>Cancel</Button>
+            <Button onPress={confirmDelete}>Yes</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      {hasChanges && (
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={handleSubmitForm} style={styles.submitButton} disabled={loading}>
+            {loading ? (
+              <ActivityIndicator color={colors.white} />
+            ) : (
+              <Text style={styles.submitButtonText}>Submit Changes</Text>
+            )}
           </TouchableOpacity>
         </View>
-        <FAB
-          icon="plus"
-          style={styles.fab}
-          onPress={() => setModalVisible(true)}
-          color={colors.white}
-        />
-      </View>
+      )}
+   
     </View>
   );
 }
@@ -226,7 +261,7 @@ const styles = StyleSheet.create({
     padding: 20,
     fontWeight: 'bold',
     textAlign: 'center',
-    maxWidth:'100%'
+    maxWidth: '100%'
   },
   editableTitle: {
     fontSize: 20,
@@ -234,8 +269,8 @@ const styles = StyleSheet.create({
     padding: 8,
     borderWidth: 2,
     borderColor: colors.black,
-    borderRadius:8,
-    marginVertical:10,
+    borderRadius: 8,
+    marginVertical: 10,
   },
   container: {
     padding: 20,
@@ -248,8 +283,8 @@ const styles = StyleSheet.create({
   },
   semesterContainer: {
     alignItems: 'center',
-    flexDirection:'row',
-    justifyContent:'space-between'
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   semesterTitle: {
     color: colors.black,
@@ -276,16 +311,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 15,
     backgroundColor: colors.black,
-    gap:15
+    gap: 15
   },
   deleteButton: {
     borderRadius: 4,
     padding: 10,
-    flexDirection:'row',
-    gap:10,
-    alignItems:'center',
-    paddingVertical:6,
-    backgroundColor:colors.white
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    paddingVertical: 6,
+    backgroundColor: colors.white
   },
   departmentText: {
     color: colors.white,
@@ -294,7 +329,7 @@ const styles = StyleSheet.create({
   },
   fab: {
     backgroundColor: colors.black,
-    color:colors.white,
+    color: colors.white,
   },
   modal: {
     justifyContent: 'flex-end',
@@ -325,9 +360,10 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: colors.black,
-    paddingVertical: 12,
+    paddingVertical: 14,
     borderRadius: 8,
-    paddingHorizontal:80,
+    paddingHorizontal: 40,
+    elevation: 5
   },
   submitButtonText: {
     color: 'white',
@@ -340,9 +376,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     flexDirection: 'row',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     padding: 20,
-    alignItems:'center',
-    justifyContent:'space-around'
+    alignItems: 'center',
+    justifyContent: 'space-around'
   },
 });

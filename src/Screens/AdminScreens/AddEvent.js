@@ -168,7 +168,8 @@ const AddEvent = (props) => {
         const res = await addEventHandler(formData);
         if (res) {
           console.log('Added event successfully');
-          Alert.alert('Added event successfully')
+          Alert.alert('Success','Added event successfully')
+          navigation.goBack()
           setIsLoading(false); 
         } else {
           Alert.alert('Failed to add event successfully')
@@ -181,7 +182,7 @@ const AddEvent = (props) => {
   };
 
   return (
-    <Layout style={styles.container} level="1">
+    <Layout style={styles.container}>
       <StatusBar backgroundColor={colors.black} barStyle="light-content" />
       <View
         style={{
@@ -200,8 +201,9 @@ const AddEvent = (props) => {
         <Text style={styles.title}>Add Event</Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 20, gap: 10 }}>
-        <View
+      <ScrollView >
+      <View style={{padding:20,gap: 10}}>
+      <View
           style={{
             justifyContent: "space-between",
             alignItems: "center",
@@ -342,6 +344,7 @@ const AddEvent = (props) => {
             <Text style={styles.buttonText}>Submit</Text>
           )}
         </TouchableOpacity>
+      </View>
       </ScrollView>
     </Layout>
   );
@@ -353,6 +356,7 @@ const styles = StyleSheet.create({
   container: {
     gap: 8,
     flex: 1,
+
   },
   button: {
     margin: 2,
