@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Platform, StatusBar,ScrollView } from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Platform, StatusBar,ScrollView, Alert } from 'react-native';
 import { TextInput, Snackbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { checkUSNExists, signupHandler } from '../../../Backend/StudentAPICalls';
 import { fetchStreamDataArray } from '../../../Backend/AdminAPICalls';
 import DropDownPicker from 'react-native-dropdown-picker';
+import colors from '../../assests/colors';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -101,6 +102,7 @@ const extractDepartments = (data, streamName) => {
   const handleSignUp = async () => {
     setSnackbarMessage('');
     setSnackbarType('error');
+    setLoading(true)
   
     if (!email || !password || !usn || !phoneNumber || !deptvalue || !semvalue ||!value) {
       setSnackbarMessage('Please fill in all fields.');
@@ -137,6 +139,8 @@ const extractDepartments = (data, streamName) => {
           setSnackbarMessage('Registered successfully');
           setSnackbarType('success');
           setSnackbarVisible(true);
+          Alert.alert('Success','Registered successfully')
+          navigation.navigate('Login')
         } else {
           setSnackbarMessage('Failed to register. Please try again.');
           setSnackbarVisible(true);
@@ -297,7 +301,10 @@ const extractDepartments = (data, streamName) => {
                 onPress={handleSignUp}
                 style={[styles.button, styles.buttonOutline]}
               >
+                {loading?<ActivityIndicator size={24} color={colors.white}></ActivityIndicator> :
                 <Text style={styles.buttonText}>Register</Text>
+                }
+                
               </TouchableOpacity>
               <TouchableOpacity
                 style={{ flexDirection: 'row', paddingTop: 10 }}

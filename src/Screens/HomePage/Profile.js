@@ -80,7 +80,7 @@ const Profile = ({ route }) => {
                     </TouchableOpacity> */}
                 </View>
                 <View style={{ backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingVertical: 20 }}>
-                    <TouchableOpacity onPress={showDialog} style={{ flexDirection: 'row', backgroundColor: colors.black, padding: 10, paddingHorizontal: 20, borderRadius: 8 }}>
+                    <TouchableOpacity onPress={showDialog} style={{ flexDirection: 'row', backgroundColor: colors.primary, padding: 10, paddingHorizontal: 80, borderRadius: 8 }}>
                         <Icon name="sign-out" size={20} color="#fff" />
                         <Text style={{ paddingHorizontal: 10, color: colors.white }}>
                             Sign out

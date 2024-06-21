@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, Platform, StatusBar, ScrollView } from 'react-native';
 import { TextInput, Snackbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -39,7 +39,7 @@ const Login = () => {
         setSnackbarMessage('Invalid email');
         setSnackbarVisible(true);
       } else if (email !== '' && password !== '' && check) {
-        setSnackbarMessage('Registered successfully');
+        setSnackbarMessage('Login Successful');
         setSnackbarType('success');
         setSnackbarVisible(true);
         setUserId(email);
@@ -66,105 +66,104 @@ const Login = () => {
       >
         <KeyboardAvoidingView style={styles.container}>
           <StatusBar backgroundColor='#1338be' barStyle='light-content' />
-         
-            <View
-              style={{
-                width: '100%',
-                marginTop: '30%',
-                flex: 1,
-                alignSelf: 'center',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderTopEndRadius: 30,
-                borderTopLeftRadius: 30,
-                backgroundColor: 'white',
-                ...Platform.select({
-                  ios: {
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 3.84,
-                  },
-                  android: {
-                    elevation: 5,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 3.84,
-                  },
-                }),
-              }}
-            >
-              <View style={{ justifyContent: 'center', alignItems: 'center', paddingVertical: '10%' }}>
-                <Text style={{ fontSize: 30, fontFamily: 'RobotoSlab-Black', color: 'black' }}>
-                  Welcome Back!
+          <View
+            style={{
+              width: '100%',
+              marginTop: '30%',
+              flex: 1,
+              alignSelf: 'center',
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderTopEndRadius: 30,
+              borderTopLeftRadius: 30,
+              backgroundColor: 'white',
+              ...Platform.select({
+                ios: {
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                },
+                android: {
+                  elevation: 5,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                },
+              }),
+            }}
+          >
+            <View style={{ justifyContent: 'center', alignItems: 'center', paddingVertical: '10%' }}>
+              <Text style={{ fontSize: 30, fontFamily: 'RobotoSlab-Black', color: 'black' }}>
+                Welcome Back!
+              </Text>
+              <Text style={{ fontSize: 15, fontFamily: 'RobotoSlab-Bold', marginBottom: 30 }}>
+                Fill in the credentials to Login
+              </Text>
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                label="Email"
+                activeOutlineColor={colors.primary}
+                value={email}
+                onChangeText={text => {
+                  setEmail(text);
+                  setSnackbarMessage('');
+                }}
+                style={styles.input}
+                textColor='black'
+                mode='outlined'
+              />
+              <TextInput
+                label="Password"
+                activeOutlineColor={colors.primary}
+                value={password}
+                onChangeText={text => {
+                  setPassword(text);
+                  setSnackbarMessage('');
+                }}
+                style={styles.input}
+                secureTextEntry={!passwordVisible}
+                textColor='black'
+                mode='outlined'
+                right={
+                  <TextInput.Icon
+                    icon={() => <Icon size={20} name={passwordVisible ? "eye" : "eye-with-line"} />}
+                    onPress={() => setPasswordVisible(!passwordVisible)}
+                  />
+                }
+              />
+            </View>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={handleLogin}
+                style={[styles.button, styles.buttonOutline]}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator size={24} color="white" />
+                ) : (
+                  <Text style={styles.buttonText}>Login</Text>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ flexDirection: 'row', paddingTop: 10 }}
+                onPress={() => navigation.navigate('Signup')}
+              >
+                <Text style={{ fontSize: 17, color: 'black' }}>Not a user? </Text>
+                <Text style={{ fontSize: 18, color: '#1338be', fontWeight: '700' }}>
+                  Click here
                 </Text>
-                <Text style={{ fontSize: 15, fontFamily: 'RobotoSlab-Bold', marginBottom: 30 }}>
-                  Fill in the credentials to Login
-                </Text>
-              </View>
-              <View style={styles.inputContainer}>
-                <TextInput
-                  label="Email"
-                  activeOutlineColor={colors.primary}
-                  value={email}
-                  onChangeText={text => {
-                    setEmail(text);
-                    setSnackbarMessage('');
-                  }}
-                  style={styles.input}
-                  textColor='black'
-                  mode='outlined'
-                />
-                <TextInput
-                  label="Password"
-                  activeOutlineColor={colors.primary}
-                  value={password}
-                  onChangeText={text => {
-                    setPassword(text);
-                    setSnackbarMessage('');
-                  }}
-                  style={styles.input}
-                  secureTextEntry={!passwordVisible}
-                  textColor='black'
-                  mode='outlined'
-                  right={
-                    <TextInput.Icon
-                      icon={props => <Icon {...props} name={passwordVisible ? "eye" : "eye-with-line"} />}
-                      onPress={() => setPasswordVisible(!passwordVisible)}
-                    />
-                  }
-                />
-              </View>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  onPress={handleLogin}
-                  style={[styles.button, styles.buttonOutline]}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <ActivityIndicator size={24} color="white" />
-                  ) : (
-                    <Text style={styles.buttonText}>Login</Text>
-                  )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{ flexDirection: 'row', paddingTop: 10 }}
-                  onPress={() => navigation.navigate('Signup')}
-                >
-                  <Text style={{ fontSize: 17, color: 'black' }}>Not a user? </Text>
-                  <Text style={{ fontSize: 18, color: '#1338be', fontWeight: '700' }}>
-                    Click here
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={{ flexDirection: 'row', paddingTop: 10 }}
                 onPress={() => navigation.navigate('Forgot')}
               >
                 <Text style={{ fontSize: 17, color: 'black' }}>Forgot Password? </Text>
               </TouchableOpacity>
             </View>
-            </View>
+          </View>
         </KeyboardAvoidingView>
         <View style={styles.snackbarContainer}>
           <Snackbar
