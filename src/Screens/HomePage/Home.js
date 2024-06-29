@@ -6,7 +6,7 @@ import { Calendar } from 'react-native-calendars';
 import { fetchFilterEvents } from '../../../Backend/StudentAPICalls';
 import { getUserdata, logout } from '../../../Backend/InAppStore';
 import { useNavigation } from '@react-navigation/native';
-import messaging from '@react-native-firebase/messaging'
+import messaging from '@react-native-firebase/messaging';
 
 const Home = () => {
   const [date, setDate] = React.useState(new Date());
@@ -38,11 +38,11 @@ const Home = () => {
 
   // Predefined colors for event types
   const eventColors = {
-    'Competition': '#F4A259',
+    'Competition': '#5A72A0',
     'Workshop': '#BC4B51',
-    'Fest': '#BC4B51',
-    'Exam': '#FF4500',
-    'Industry Visit': '#BC4B51'
+    'Fest': '#1679AB',
+    'Exam': '#C80036',
+    'Industry Visit': '#FF7D29'
   };
 
   const getMarkedDates = (events) => {
@@ -93,7 +93,7 @@ const Home = () => {
   }, {});
 
   return (
-    <View style={{ flex: 1,backgroundColor:colors.lightBackground }}>
+    <View style={{ flex: 1, backgroundColor: colors.lightBackground }}>
       <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
 
       <View
@@ -102,14 +102,18 @@ const Home = () => {
           justifyContent: 'space-between',
           backgroundColor: colors.primary,
           padding: 10,
-          paddingHorizontal:30
-        }}>
+          paddingHorizontal: 30,
+        }}
+      >
         <View style={{ justifyContent: 'center' }}>
           <Text style={{ color: 'white', fontSize: 20, fontWeight: '700' }}>
             {userData ? userData.usn : 'User Name'}
           </Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile', { userData })} style={{padding:2,borderWidth:2,borderColor:'white',borderRadius:50}}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Profile', { userData })}
+          style={{ padding: 2, borderWidth: 2, borderColor: 'white', borderRadius: 50 }}
+        >
           <Avatar.Text
             size={50}
             labelStyle={{ color: colors.primary }}
@@ -134,13 +138,11 @@ const Home = () => {
           />
         </View>
       </View>
-      <ScrollView
-        horizontal
-        style={{ flexDirection: 'row', width: '100%' }}>
+      <ScrollView horizontal style={{ flexDirection: 'row', width: '100%' }}>
         {Object.keys(groupedEvents).map((eventType, index) => (
           <ScrollView key={index} style={{ margin: 10 }}>
-            <Text style={{ color: eventColors[eventType], fontWeight: 'bold', fontSize: 18, marginBottom: 10 }}>
-              {eventType}
+            <Text style={{ color: eventColors[eventType], fontWeight: 'bold', fontSize: 17, marginBottom: 10 }}>
+              {eventType.toUpperCase()}
             </Text>
             {groupedEvents[eventType].map((event, idx) => (
               <View
@@ -150,14 +152,18 @@ const Home = () => {
                   marginBottom: 10,
                   borderRadius: 8,
                   padding: 10,
-                  borderWidth: 2,
-                  borderColor: eventColors[event.type],
-                }}>
+                  elevation: 1,
+                  shadowColor: colors.blue,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 1,
+                  shadowRadius: 5,
+                }}
+              >
                 <Text style={{ color: eventColors[event.type], fontWeight: 'bold', fontSize: 16 }}>
                   {event.title}
                 </Text>
                 <Text style={{ color: eventColors[event.type], fontSize: 14 }}>
-                  {new Date(event.range.startDate).toDateString()}
+                  {new Date(event.range.startDate).toDateString()} {event.range.endDate ? `- ${new Date(event.range.endDate).toDateString()}` : ''}
                 </Text>
                 <Text style={{ color: eventColors[event.type], fontSize: 14 }}>
                   {event.time}
@@ -168,8 +174,8 @@ const Home = () => {
         ))}
       </ScrollView>
     </View>
-  )
-}
+  );
+};
 
 export default Home;
 

@@ -160,7 +160,7 @@ const Login = () => {
                 style={{ flexDirection: 'row', paddingTop: 10 }}
                 onPress={() => navigation.navigate('Forgot')}
               >
-                <Text style={{ fontSize: 17, color: 'black' }}>Forgot Password? </Text>
+                <Text style={{ fontSize: 17, color: 'black',color:colors.primary }}>Forgot Password? </Text>
               </TouchableOpacity>
             </View>
           </View>

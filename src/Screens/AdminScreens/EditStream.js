@@ -1,10 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert,ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import colors from '../../assests/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { FAB, Dialog, Portal, Button, ActivityIndicator } from 'react-native-paper';
+import { FAB, Dialog, Portal, Button,  } from 'react-native-paper';
 import Modal from 'react-native-modal';
 import { addStreamHandler, deleteSemRelatedData, editStream, editStreamTitleRelatedData } from '../../../Backend/AdminAPICalls';
+import { useNavigation } from '@react-navigation/native';
 
 const EditStream = (props) => {
   const data = props.route.params.stream;
@@ -23,6 +24,7 @@ const EditStream = (props) => {
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const navigation=useNavigation()
 
   useEffect(() => {
     setHasChanges(
@@ -57,7 +59,8 @@ const EditStream = (props) => {
     const res = await editStream(data.id, formData, data.stream, missingDepts, editedDepts);
 
     if (res) {
-      Alert.alert("Successfully updated stream");
+      Alert.alert("Success","Successfully updated stream");
+      navigation.goBack()
     }
     setLoading(false);
   }
@@ -108,7 +111,7 @@ const EditStream = (props) => {
   };
 
   const decrementSem = () => {
-    if (sem > data.semester) {
+    if (sem > 1) {
       setSem(sem - 1);
     }
   };
@@ -151,14 +154,14 @@ const EditStream = (props) => {
               style={styles.semesterButton}
               onPress={decrementSem}
             >
-              <Icon name="minus" size={15} color={colors.black} />
+              <Icon name="minus" size={15} color={colors.white} />
             </TouchableOpacity>
             <Text style={styles.semesterText}>{sem}</Text>
             <TouchableOpacity
               style={styles.semesterButton}
               onPress={incrementSem}
             >
-              <Icon name="plus" size={15} color={colors.black} />
+              <Icon name="plus" size={15} color={colors.white} />
             </TouchableOpacity>
           </View>
         </View>
@@ -287,25 +290,35 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   semesterTitle: {
-    color: colors.black,
+    color: colors.white,
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    backgroundColor:colors.black,
+    padding:5,
+    paddingHorizontal:20,
+    borderRadius:6,
+
   },
   semesterControls: {
     flexDirection: 'row',
     gap: 20,
-    paddingVertical: 10
+    backgroundColor:colors.black,
+    borderRadius: 8,
+    borderColor:colors.white,
+    alignItems:'center'
+    
   },
   semesterButton: {
-    borderWidth: 2,
     borderRadius: 8,
     padding: 10,
-    borderColor: colors.black
+    borderColor:colors.white
+    
   },
   semesterText: {
-    fontSize: 25,
+    fontSize: 20,
     textAlign: 'center',
-    color: colors.black
+    color: colors.white,
+    fontWeight:'bold'
   },
   departmentContainer: {
     borderRadius: 8,
