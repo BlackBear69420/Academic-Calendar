@@ -30,14 +30,14 @@ export const sendMessageEvent = async (data) => {
   console.log(data.title)
   console.log(data.description);
 
-  const resToken = await axios.get('http://192.168.29.190:7000/getToken');
+  const resToken = await axios.get('https://servercalendar.onrender.com/getToken');
   console.log(resToken.data.token);
 
   const bearerToken = resToken.data.token;
 
 
   const message = {
-    message:{
+    message: {
       notification: {
         title: data.title,
         body: data.description
